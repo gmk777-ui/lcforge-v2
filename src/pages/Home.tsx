@@ -72,7 +72,7 @@ export default function HomePage() {
     timestamp: string;
     fingerprint: string;
   } | null>(null);
-
+  const [alreadyGeneratedWarning, setAlreadyGeneratedWarning] = useState<string | null>(null);
   function handleGenerate() {
     const name = drugName.trim() || "Drug";
     const demo = buildExampleResult(name);
@@ -238,6 +238,12 @@ export default function HomePage() {
               </select>
             </div>
           </div>
+
+          {alreadyGeneratedWarning && (
+            <p className="small-muted" style={{ color: "#f97373" }}>
+              {alreadyGeneratedWarning}
+            </p>
+          )}
 
           <p className="small-muted">
             In a live system this would trigger AI‑driven method generation tuned to sample type

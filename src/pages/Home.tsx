@@ -318,16 +318,67 @@ export default function HomePage() {
                     <dd>{certificate.fingerprint}</dd>
                   </div>
                 </dl>
-               <p className="small-muted">
+                <p className="small-muted">
                   This chromatographic method is generated exclusively for the above user by LCForge
                   AI (demo). This method is confidential and reserved for the requesting organization.
                   Unauthorized reproduction or redistribution is discouraged.
                 </p>
 
+                <div
+                  style={{
+                    marginTop: "0.75rem",
+                    padding: "0.75rem",
+                    borderRadius: "0.75rem",
+                    border: "1px dashed rgba(148, 163, 184, 0.7)",
+                    background: "rgba(15, 23, 42, 0.9)"
+                  }}
+                >
+                  <h4 style={{ margin: "0 0 0.4rem", fontSize: "0.9rem" }}>Payment (demo only)</h4>
+                  <p className="small-muted" style={{ marginBottom: "0.4rem" }}>
+                    To simulate Indian payments, this demo shows UPI details only. No real payment is
+                    processed.
+                  </p>
+                  <p style={{ fontSize: "0.8rem", margin: "0 0 0.25rem" }}>
+                    <strong>Payment for:</strong> LCForge Method Generation (demo)
+                  </p>
+                  <p style={{ fontSize: "0.8rem", margin: "0 0 0.25rem" }}>
+                    <strong>UPI ID:</strong> lcforge-demo@upi
+                  </p>
+                  <p style={{ fontSize: "0.8rem", margin: "0 0 0.5rem" }}>
+                    <strong>Amount (example):</strong> ₹499 per method (demo)
+                  </p>
+                  <p className="small-muted">
+                    After completing payment in your UPI app, tick the box below to unlock PDF
+                    download (demo only, no server verification).
+                  </p>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      fontSize: "0.8rem",
+                      marginTop: "0.5rem",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isPaidDemo}
+                      onChange={(e) => setIsPaidDemo(e.target.checked)}
+                    />
+                    I confirm I have completed UPI payment (demo).
+                  </label>
+                </div>
+
                 <button
                   className="outline-button"
-                  style={{ marginTop: "0.75rem" }}
-                  onClick={handleDownloadPdf}
+                  style={{
+                    marginTop: "0.75rem",
+                    opacity: isPaidDemo ? 1 : 0.5,
+                    cursor: isPaidDemo ? "pointer" : "not-allowed"
+                  }}
+                  onClick={isPaidDemo ? handleDownloadPdf : undefined}
                 >
                   Download Method as PDF (demo)
                 </button>

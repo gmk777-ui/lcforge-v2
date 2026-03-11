@@ -42,9 +42,8 @@ function buildFingerprint(data: {
   column: string;
   instrument: string;
   email: string;
-  timestamp: string;
 }) {
-  const raw = `${data.drug}|${data.column}|${data.instrument}|${data.email}|${data.timestamp}`;
+  const raw = `${data.drug}|${data.column}|${data.instrument}|${data.email}`;
   // Simple demo hash: in future we can replace with real SHA-256
   let hash = 0;
   for (let i = 0; i < raw.length; i++) {
@@ -91,8 +90,7 @@ export default function HomePage() {
       drug: name,
       column: columnType || demo.method.column,
       instrument: instrument || technique,
-      email: email || "anonymous@lcforge.local",
-      timestamp
+      email: email || "anonymous@lcforge.local"
     });
 
     const cert = { methodId, timestamp, fingerprint };

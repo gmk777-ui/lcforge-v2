@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateMethodPdf } from "../utils/pdfGenerator";
 
 type ExampleResult = ReturnType<typeof buildExampleResult>;
 
@@ -73,6 +74,29 @@ export default function HomePage() {
   } | null>(null);
   const [alreadyGeneratedWarning, setAlreadyGeneratedWarning] = useState<string | null>(null);
   function handleGenerate() {
+    // ...existing handleGenerate code here...
+  }
+
+  function handleDownloadPdf() {
+    if (!result || !certificate) return;
+
+    generateMethodPdf({
+      drug: drugName.trim() || "Drug",
+      scientistName: scientistName || "Scientist (demo)",
+      email: email || "email@demo.local",
+      company: company || "Organization (demo)",
+      instrument: instrument || technique,
+      methodId: certificate.methodId,
+      timestamp: certificate.timestamp,
+      fingerprint: certificate.fingerprint,
+      column: columnType || result.method.column,
+      mobilePhase: result.method.mobilePhase,
+      flowRate: result.method.flowRate,
+      detection: result.method.detection,
+      runtime: result.method.runtime
+    });
+  }
+  
     const name = drugName.trim() || "Drug";
     const demo = buildExampleResult(name);
     setResult(demo);

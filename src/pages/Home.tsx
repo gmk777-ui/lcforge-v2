@@ -318,11 +318,19 @@ export default function HomePage() {
                     <dd>{certificate.fingerprint}</dd>
                   </div>
                 </dl>
-                <p className="small-muted">
+               <p className="small-muted">
                   This chromatographic method is generated exclusively for the above user by LCForge
                   AI (demo). This method is confidential and reserved for the requesting organization.
                   Unauthorized reproduction or redistribution is discouraged.
                 </p>
+
+                <button
+                  className="outline-button"
+                  style={{ marginTop: "0.75rem" }}
+                  onClick={handleDownloadPdf}
+                >
+                  Download Method as PDF (demo)
+                </button>
               </div>
             </section>
           )}

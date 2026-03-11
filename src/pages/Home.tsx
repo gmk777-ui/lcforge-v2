@@ -37,16 +37,78 @@ function buildExampleResult(drug: string) {
   };
 }
 
+function buildFingerprint(data: {
+  drug: string;
+  column: string;
+  instrument: string;
+  email: string;
+  timestamp: string;
+}) {
+  const raw = `${data.drug}|${data.column}|${data.instrument}|${data.email}|${data.timestamp}`;
+  // Simple demo hash: in future we can replace with real SHA-256
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    const chr = raw.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0;
+  }
+  return `DEMO-${Math.abs(hash)}`;
+}
+
 export default function HomePage() {
   const [drugName, setDrugName] = useState("");
   const [sampleType, setSampleType] = useState<(typeof sampleTypes)[number]>("API");
   const [technique, setTechnique] = useState<(typeof techniques)[number]>("HPLC");
   const [result, setResult] = useState<ExampleResult | null>(null);
 
+  const [scientistName, setScientistName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [instrument, setInstrument] = useState("");
+  const [columnType, setColumnType] = useState("");
+  const [certificate, setCertificate] = useState<{
+    methodId: string;
+    timestamp: string;
+    fingerprint: string;
+  } | null>(null);
+
   function handleGenerate() {
     const name = drugName.trim() || "Drug";
     const demo = buildExampleResult(name);
     setResult(demo);
+
+    const now = new Date();
+    const timestamp = now.toISOString();
+    const methodId = `LCForge-${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${now
+      .getHours()
+      .toString()
+      .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
+
+    const fingerprint = buildFingerprint({
+      drug: name,
+      column: columnType || demo.method.column,
+      instrument: instrument || technique,
+      email: email || "anonymous@lcforge.local",
+      timestamp
+    });
+
+    const cert = { methodId, timestamp, fingerprint };
+    setCertificate(cert);
+
+    try {
+      const key = "lcforge-method-fingerprints";
+      const stored = window.localStorage.getItem(key);
+      const list: string[] = stored ? JSON.parse(stored) : [];
+      if (!list.includes(fingerprint)) {
+        list.push(fingerprint);
+        window.localStorage.setItem(key, JSON.stringify(list));
+      }
+    } catch {
+      // ignore storage errors in demo
+    }
   }
 
   return (
@@ -75,6 +137,68 @@ export default function HomePage() {
           <p className="card-subtitle">
             Enter a drug and see a draft HPLC method, example literature, and properties.
           </p>
+
+          <div className="field">
+            <label>Scientist name</label>
+            <input
+              type="text"
+              placeholder="Example: Dr. Mani Kumar"
+              value={scientistName}
+              onChange={(e) => setScientistName(e.target.value)}
+            />
+          </div>
+
+          <div className="field-row">
+            <div className="field">
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="field">
+              <label>Company</label>
+              <input
+                type="text"
+                placeholder="Example: ABC Pharma Ltd"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="field-row">
+            <div className="field">
+              <label>Designation</label>
+              <input
+                type="text"
+                placeholder="Example: Sr. Scientist, Analytical R&amp;D"
+                value={designation}
+                onChange={(e) => setDesignation(e.target.value)}
+              />
+            </div>
+            <div className="field">
+              <label>Instrument type</label>
+              <input
+                type="text"
+                placeholder="Example: Waters HPLC / UPLC / LC‑MS"
+                value={instrument}
+                onChange={(e) => setInstrument(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Column type</label>
+            <input
+              type="text"
+              placeholder="Example: C18, 150 × 4.6 mm, 5 µm"
+              value={columnType}
+              onChange={(e) => setColumnType(e.target.value)}
+            />
+          </div>
 
           <div className="field">
             <label>Drug name</label>
@@ -127,81 +251,128 @@ export default function HomePage() {
       </section>
 
       {result && (
-        <section className="results">
-          <div className="result-card">
-            <h3>Proposed LC Method</h3>
-            <dl>
-              <div>
-                <dt>Drug</dt>
-                <dd>{drugName.trim() || "Drug"}</dd>
+        <>
+          {certificate && (
+            <section style={{ marginTop: "1.5rem" }}>
+              <div className="result-card">
+                <h3>LCForge Generated Method Certificate (Demo)</h3>
+                <dl>
+                  <div>
+                    <dt>Drug</dt>
+                    <dd>{drugName.trim() || "Drug"}</dd>
+                  </div>
+                  <div>
+                    <dt>Generated For</dt>
+                    <dd>{scientistName || "Scientist (demo)"}</dd>
+                  </div>
+                  <div>
+                    <dt>Company</dt>
+                    <dd>{company || "Organization (demo)"}</dd>
+                  </div>
+                  <div>
+                    <dt>Email</dt>
+                    <dd>{email || "email@demo.local"}</dd>
+                  </div>
+                  <div>
+                    <dt>Instrument</dt>
+                    <dd>{instrument || technique}</dd>
+                  </div>
+                  <div>
+                    <dt>Method ID</dt>
+                    <dd>{certificate.methodId}</dd>
+                  </div>
+                  <div>
+                    <dt>Generation Date</dt>
+                    <dd>{new Date(certificate.timestamp).toLocaleString()}</dd>
+                  </div>
+                  <div>
+                    <dt>Confidential Method Fingerprint</dt>
+                    <dd>{certificate.fingerprint}</dd>
+                  </div>
+                </dl>
+                <p className="small-muted">
+                  This chromatographic method is generated exclusively for the above user by LCForge
+                  AI (demo). This method is confidential and reserved for the requesting organization.
+                  Unauthorized reproduction or redistribution is discouraged.
+                </p>
               </div>
-              <div>
-                <dt>Sample type</dt>
-                <dd>{sampleType}</dd>
-              </div>
-              <div>
-                <dt>Technique</dt>
-                <dd>{technique}</dd>
-              </div>
-              <div>
-                <dt>Column</dt>
-                <dd>{result.method.column}</dd>
-              </div>
-              <div>
-                <dt>Mobile phase</dt>
-                <dd>{result.method.mobilePhase}</dd>
-              </div>
-              <div>
-                <dt>Flow rate</dt>
-                <dd>{result.method.flowRate}</dd>
-              </div>
-              <div>
-                <dt>Detection</dt>
-                <dd>{result.method.detection}</dd>
-              </div>
-              <div>
-                <dt>Run time</dt>
-                <dd>{result.method.runtime}</dd>
-              </div>
-            </dl>
-            <p className="small-muted">{result.method.notes}</p>
-          </div>
+            </section>
+          )}
 
-          <div className="result-card">
-            <h3>Key Literature (demo)</h3>
-            <ul>
-              {result.literature.map((lit, idx) => (
-                <li key={idx}>
-                  <p className="lit-title">{lit.title}</p>
-                  <p className="lit-meta">
-                    {lit.journal}, {lit.year}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <section className="results">
+            <div className="result-card">
+              <h3>Proposed LC Method</h3>
+              <dl>
+                <div>
+                  <dt>Drug</dt>
+                  <dd>{drugName.trim() || "Drug"}</dd>
+                </div>
+                <div>
+                  <dt>Sample type</dt>
+                  <dd>{sampleType}</dd>
+                </div>
+                <div>
+                  <dt>Technique</dt>
+                  <dd>{technique}</dd>
+                </div>
+                <div>
+                  <dt>Column</dt>
+                  <dd>{result.method.column}</dd>
+                </div>
+                <div>
+                  <dt>Mobile phase</dt>
+                  <dd>{result.method.mobilePhase}</dd>
+                </div>
+                <div>
+                  <dt>Flow rate</dt>
+                  <dd>{result.method.flowRate}</dd>
+                </div>
+                <div>
+                  <dt>Detection</dt>
+                  <dd>{result.method.detection}</dd>
+                </div>
+                <div>
+                  <dt>Run time</dt>
+                  <dd>{result.method.runtime}</dd>
+                </div>
+              </dl>
+              <p className="small-muted">{result.method.notes}</p>
+            </div>
 
-          <div className="result-card">
-            <h3>Drug Properties (demo)</h3>
-            <dl>
-              <div>
-                <dt>logP</dt>
-                <dd>{result.properties.logP}</dd>
-              </div>
-              <div>
-                <dt>pKa</dt>
-                <dd>{result.properties.pKa}</dd>
-              </div>
-              <div>
-                <dt>Solubility</dt>
-                <dd>{result.properties.solubility}</dd>
-              </div>
-            </dl>
-          </div>
-        </section>
+            <div className="result-card">
+              <h3>Key Literature (demo)</h3>
+              <ul>
+                {result.literature.map((lit, idx) => (
+                  <li key={idx}>
+                    <p className="lit-title">{lit.title}</p>
+                    <p className="lit-meta">
+                      {lit.journal}, {lit.year}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="result-card">
+              <h3>Drug Properties (demo)</h3>
+              <dl>
+                <div>
+                  <dt>logP</dt>
+                  <dd>{result.properties.logP}</dd>
+                </div>
+                <div>
+                  <dt>pKa</dt>
+                  <dd>{result.properties.pKa}</dd>
+                </div>
+                <div>
+                  <dt>Solubility</dt>
+                  <dd>{result.properties.solubility}</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+        </>
       )}
     </>
   );
 }
-
-

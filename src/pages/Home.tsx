@@ -73,30 +73,8 @@ export default function HomePage() {
     fingerprint: string;
   } | null>(null);
   const [alreadyGeneratedWarning, setAlreadyGeneratedWarning] = useState<string | null>(null);
+  const [isPaidDemo, setIsPaidDemo] = useState(false);
   function handleGenerate() {
-    // ...existing handleGenerate code here...
-  }
-
-  function handleDownloadPdf() {
-    if (!result || !certificate) return;
-
-    generateMethodPdf({
-      drug: drugName.trim() || "Drug",
-      scientistName: scientistName || "Scientist (demo)",
-      email: email || "email@demo.local",
-      company: company || "Organization (demo)",
-      instrument: instrument || technique,
-      methodId: certificate.methodId,
-      timestamp: certificate.timestamp,
-      fingerprint: certificate.fingerprint,
-      column: columnType || result.method.column,
-      mobilePhase: result.method.mobilePhase,
-      flowRate: result.method.flowRate,
-      detection: result.method.detection,
-      runtime: result.method.runtime
-    });
-  }
-  
     const name = drugName.trim() || "Drug";
     const demo = buildExampleResult(name);
     setResult(demo);
@@ -131,6 +109,26 @@ export default function HomePage() {
     } catch {
       // ignore storage errors in demo
     }
+  }
+
+  function handleDownloadPdf() {
+    if (!result || !certificate) return;
+
+    generateMethodPdf({
+      drug: drugName.trim() || "Drug",
+      scientistName: scientistName || "Scientist (demo)",
+      email: email || "email@demo.local",
+      company: company || "Organization (demo)",
+      instrument: instrument || technique,
+      methodId: certificate.methodId,
+      timestamp: certificate.timestamp,
+      fingerprint: certificate.fingerprint,
+      column: columnType || result.method.column,
+      mobilePhase: result.method.mobilePhase,
+      flowRate: result.method.flowRate,
+      detection: result.method.detection,
+      runtime: result.method.runtime
+    });
   }
 
   return (

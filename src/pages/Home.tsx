@@ -52,229 +52,167 @@ function buildFingerprint(data: {
     hash = (hash << 5) - hash + chr;
     hash |= 0;
   }
-  return `DEMO-${Math.abs(hash)}`;
-}
+  <section className="hero">
+  {/* Left: hero text */}
+  <div className="hero-left">
+    <div className="hero-inner">
+      <div className="hero-kicker">AI‑assisted LC development · Demo</div>
+      <h1 className="hero-title">
+        Draft robust chromatography methods in minutes, not weeks.
+      </h1>
+      <p className="hero-subtitle">
+        Describe your molecule and context, and LCForge AI proposes a starting
+        LC/HPLC/LC‑MS method with fingerprints and PDF certificates for internal
+        documentation.
+      </p>
 
-export default function HomePage() {
-  const [drugName, setDrugName] = useState("");
-  const [sampleType, setSampleType] = useState<(typeof sampleTypes)[number]>("API");
-  const [technique, setTechnique] = useState<(typeof techniques)[number]>("HPLC");
-  const [result, setResult] = useState<ExampleResult | null>(null);
+      <div className="hero-pills">
+        <span className="hero-pill">Method fingerprinting</span>
+        <span className="hero-pill">PDF certificate export</span>
+        <span className="hero-pill">Stability‑indicating focus</span>
+      </div>
 
-  const [scientistName, setScientistName] = useState("");
-  const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [instrument, setInstrument] = useState("");
-  const [columnType, setColumnType] = useState("");
-  const [certificate, setCertificate] = useState<{
-    methodId: string;
-    timestamp: string;
-    fingerprint: string;
-  } | null>(null);
-  const [alreadyGeneratedWarning, setAlreadyGeneratedWarning] = useState<string | null>(null);
-  const [isPaidDemo, setIsPaidDemo] = useState(false);
-  function handleGenerate() {
-    const name = drugName.trim() || "Drug";
-    const demo = buildExampleResult(name);
-    setResult(demo);
+      <div className="hero-footer-line">
+        Built for analytical scientists, demo only – not connected to any real
+        instrument or payment gateway.
+      </div>
 
-    const now = new Date();
-    const timestamp = now.toISOString();
-    const methodId = `LCForge-${now.getFullYear()}${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${now
-      .getHours()
-      .toString()
-      .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
+      <div className="info-strip">
+        <span className="info-chip">
+          Contact (demo): support@lcforge.ai
+        </span>
+        <span className="info-chip">
+          Scientific lead (demo): Dr. Mani Kumar
+        </span>
+        <span className="info-chip">
+          Location (demo): Hyderabad · India
+        </span>
+      </div>
+    </div>
+  </div>
 
-    const fingerprint = buildFingerprint({
-      drug: name,
-      column: columnType || demo.method.column,
-      instrument: instrument || technique,
-      email: email || "anonymous@lcforge.local"
-    });
+  {/* Right: glass form card */}
+  <div className="hero-right">
+    <div className="glass-card form-card">
+      <div className="form-card-title-row">
+        <div className="form-card-title">Quick Method Workspace (Demo)</div>
+        <div className="form-card-hint">No data is sent to a server.</div>
+      </div>
 
-    const cert = { methodId, timestamp, fingerprint };
-    setCertificate(cert);
-
-    try {
-      const key = "lcforge-method-fingerprints";
-      const stored = window.localStorage.getItem(key);
-      const list: string[] = stored ? JSON.parse(stored) : [];
-      if (!list.includes(fingerprint)) {
-        list.push(fingerprint);
-        window.localStorage.setItem(key, JSON.stringify(list));
-      }
-    } catch {
-      // ignore storage errors in demo
-    }
-  }
-
-  function handleDownloadPdf() {
-    if (!result || !certificate) return;
-
-    generateMethodPdf({
-      drug: drugName.trim() || "Drug",
-      scientistName: scientistName || "Scientist (demo)",
-      email: email || "email@demo.local",
-      company: company || "Organization (demo)",
-      instrument: instrument || technique,
-      methodId: certificate.methodId,
-      timestamp: certificate.timestamp,
-      fingerprint: certificate.fingerprint,
-      column: columnType || result.method.column,
-      mobilePhase: result.method.mobilePhase,
-      flowRate: result.method.flowRate,
-      detection: result.method.detection,
-      runtime: result.method.runtime
-    });
-  }
-
-  return (
-    <>
-      <section className="hero">
-        <div className="hero-text">
-          <h1>Forge Robust Chromatography with AI</h1>
-          <p>
-            LCForge AI helps pharmaceutical scientists auto‑generate HPLC and LC‑MS analytical
-            methods under Quality by Design and White Analytical Chemistry principles – from drug
-            name to draft method in minutes.
-          </p>
-          <div className="pill-row">
-            <span className="pill">HPLC · LC‑MS · LC‑MS/MS</span>
-            <span className="pill">QbD &amp; White Analytical Chemistry</span>
-            <span className="pill">Drug properties &amp; literature intelligence</span>
-          </div>
-          <p className="hero-note">
-            This is a static demo UI – production LCForge AI would connect to live AI models,
-            literature databases, and payment systems.
-          </p>
+      <div className="form-grid">
+        <div className="form-field">
+          <label className="form-label">Scientist name</label>
+          <input
+            className="form-input"
+            value={scientistName}
+            onChange={(e) => setScientistName(e.target.value)}
+            placeholder="Dr. Mani Kumar"
+          />
         </div>
 
-        <div className="card">
-          <h2 className="card-title">Quick Drug Search (Demo)</h2>
-          <p className="card-subtitle">
-            Enter a drug and see a draft HPLC method, example literature, and properties.
-          </p>
-
-          <div className="field">
-            <label>Scientist name</label>
-            <input
-              type="text"
-              placeholder="Example: Dr. Mani Kumar"
-              value={scientistName}
-              onChange={(e) => setScientistName(e.target.value)}
-            />
-          </div>
-
-          <div className="field-row">
-            <div className="field">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="field">
-              <label>Company</label>
-              <input
-                type="text"
-                placeholder="Example: ABC Pharma Ltd"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="field-row">
-            <div className="field">
-              <label>Designation</label>
-              <input
-                type="text"
-                placeholder="Example: Sr. Scientist, Analytical R&amp;D"
-                value={designation}
-                onChange={(e) => setDesignation(e.target.value)}
-              />
-            </div>
-            <div className="field">
-              <label>Instrument type</label>
-              <input
-                type="text"
-                placeholder="Example: Waters HPLC / UPLC / LC‑MS"
-                value={instrument}
-                onChange={(e) => setInstrument(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="field">
-            <label>Column type</label>
-            <input
-              type="text"
-              placeholder="Example: C18, 150 × 4.6 mm, 5 µm"
-              value={columnType}
-              onChange={(e) => setColumnType(e.target.value)}
-            />
-          </div>
-
-          <div className="field">
-            <label>Drug name</label>
-            <input
-              type="text"
-              placeholder="Example: Metformin"
-              value={drugName}
-              onChange={(e) => setDrugName(e.target.value)}
-            />
-          </div>
-
-          <div className="field-row">
-            <div className="field">
-              <label>Sample type</label>
-              <select
-                value={sampleType}
-                onChange={(e) => setSampleType(e.target.value as (typeof sampleTypes)[number])}
-              >
-                {sampleTypes.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>Technique</label>
-              <select
-                value={technique}
-                onChange={(e) => setTechnique(e.target.value as (typeof techniques)[number])}
-              >
-                {techniques.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {alreadyGeneratedWarning && (
-            <p className="small-muted" style={{ color: "#f97373" }}>
-              {alreadyGeneratedWarning}
-            </p>
-          )}
-
-          <p className="small-muted">
-            In a live system this would trigger AI‑driven method generation tuned to sample type
-            and technique. Here it uses deterministic demo logic only.
-          </p>
-
-          <button className="primary-button" onClick={handleGenerate}>
-            Generate Method (demo only)
-          </button>
+        <div className="form-field">
+          <label className="form-label">Email</label>
+          <input
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+          />
         </div>
-      </section>
+
+        <div className="form-field">
+          <label className="form-label">Organization / Company</label>
+          <input
+            className="form-input"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="Agape Bio / CRO"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Designation</label>
+          <input
+            className="form-input"
+            value={designation}
+            onChange={(e) => setDesignation(e.target.value)}
+            placeholder="Analytical Scientist"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Instrument</label>
+          <input
+            className="form-input"
+            value={instrument}
+            onChange={(e) => setInstrument(e.target.value)}
+            placeholder="HPLC / UPLC / LC‑MS/MS"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Column</label>
+          <input
+            className="form-input"
+            value={columnType}
+            onChange={(e) => setColumnType(e.target.value)}
+            placeholder="C18, 150 × 4.6 mm, 5 µm"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Drug / Analyte</label>
+          <input
+            className="form-input"
+            value={drugName}
+            onChange={(e) => setDrugName(e.target.value)}
+            placeholder="Example: Metformin"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Sample matrix</label>
+          <select
+            className="form-select"
+            value={sampleType}
+            onChange={(e) =>
+              setSampleType(e.target.value as (typeof sampleTypes)[number])
+            }
+          >
+            {sampleTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">Technique</label>
+          <select
+            className="form-select"
+            value={technique}
+            onChange={(e) =>
+              setTechnique(e.target.value as (typeof techniques)[number])
+            }
+          >
+            {techniques.map((tech) => (
+              <option key={tech} value={tech}>
+                {tech}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button className="btn-primary" onClick={handleGenerate}>
+          Generate method (demo)
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 
       {result && (
         <>

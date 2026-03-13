@@ -522,3 +522,49 @@ body {
   padding: 18px 22px 22px;
   overflow-y: auto;
 }
+.home-page-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 4px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.hero-left {
+  flex: 1.4;
+  min-width: 260px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.18), transparent 60%),
+    url("/lab-hero.jpg") center center / cover no-repeat;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0.9;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* and the rest: hero-kicker, hero-title, hero-subtitle, hero-pills, hero-footer-line, etc. */

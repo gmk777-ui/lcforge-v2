@@ -381,13 +381,14 @@ export default function HomePage() {
                   >
                     Payment (demo only)
                   </h4>
-                  <p
-                    className="small-muted"
-                    style={{ marginBottom: "0.4rem" }}
-                  >
-                    To simulate Indian payments, this demo shows UPI details
-                    only. No real payment is processed.
-                  </p>
+                 <p
+  className="small-muted"
+  style={{ marginBottom: "0.4rem" }}
+>
+  This payment section is for demonstration only. The UPI details shown are
+  examples, and no actual payment can or will be processed through this
+  interface.
+</p>
                   <p
                     style={{
                       fontSize: "0.8rem",

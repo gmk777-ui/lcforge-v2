@@ -326,15 +326,14 @@ export default function HomePage() {
           <button className="btn-primary" onClick={handleGenerate}>
             Generate method (demo)
           </button>
-        </div>          {/* closes inner div */}
-    </div>            {/* closes outer div */ }
+        </div> {/* closes inner div */}
+    </div>   {/* closes outer div */ }
   </section > {/* closes the section */ }
 
   {
     result && (
       <>
         {certificate && (
-
           <>
             {certificate && (
               <section style={{ marginTop: "1.5rem" }}>
@@ -373,6 +372,35 @@ export default function HomePage() {
                       <dt>Confidential Method Fingerprint</dt>
                       <dd>{certificate.fingerprint}</dd>
                     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                   </dl>
                   <p className="small-muted">
                     This chromatographic method is generated exclusively for the

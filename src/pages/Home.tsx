@@ -92,9 +92,9 @@ export default function HomePage() {
     const methodId = `LCForge-${now.getFullYear()}${(now.getMonth() + 1)
       .toString()
       .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${now
-      .getHours()
-      .toString()
-      .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
+        .getHours()
+        .toString()
+        .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
 
     const fingerprint = buildFingerprint({
       drug: name,
@@ -147,13 +147,15 @@ export default function HomePage() {
           <div className="hero-inner">
             <div className="hero-kicker">AI‑assisted LC development · Demo</div>
             <h1 className="hero-title">
-              Draft robust chromatography methods in minutes, not weeks.
+              LCForge AI – QbD‑first, White Analytical Chemistry.
             </h1>
+
             <p className="hero-subtitle">
-              Describe your molecule and context, and LCForge AI proposes a
-              starting LC/HPLC/LC‑MS method with fingerprints and PDF
-              certificates for internal documentation.
+              LCForge AI helps pharmaceutical scientists design reliable HPLC and LC‑MS methods
+              by combining QbD‑first logic with White Analytical Chemistry (WAC), starting from
+              your molecule and existing literature and data.
             </p>
+
 
             <div className="hero-pills">
               <span className="hero-pill">Method fingerprinting</span>
@@ -182,7 +184,16 @@ export default function HomePage() {
 
         {/* Right: glass form card */}
         <div className="hero-right">
-          <div className="glass-card form-card">
+          <div
+            className="glass-card form-card"
+            style={{
+              backgroundColor: "#0f172a",
+              borderRadius: "1rem",
+              border: "2px solid #38bdf8",
+              boxShadow: "0 18px 40px rgba(15, 23, 42, 0.9)",
+              padding: "1.5rem",
+            }}
+          >
             <div className="form-card-title-row">
               <div className="form-card-title">
                 Quick Method Workspace (Demo)
@@ -191,342 +202,346 @@ export default function HomePage() {
                 No data is sent to a server.
               </div>
             </div>
-
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-label">Scientist name</label>
-                <input
-                  className="form-input"
-                  value={scientistName}
-                  onChange={(e) => setScientistName(e.target.value)}
-                  placeholder="Dr. Mani Kumar"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Email</label>
-                <input
-                  className="form-input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Organization / Company</label>
-                <input
-                  className="form-input"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="Agape Bio / CRO"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Designation</label>
-                <input
-                  className="form-input"
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
-                  placeholder="Analytical Scientist"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Instrument</label>
-                <input
-                  className="form-input"
-                  value={instrument}
-                  onChange={(e) => setInstrument(e.target.value)}
-                  placeholder="HPLC / UPLC / LC‑MS/MS"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Column</label>
-                <input
-                  className="form-input"
-                  value={columnType}
-                  onChange={(e) => setColumnType(e.target.value)}
-                  placeholder="C18, 150 × 4.6 mm, 5 µm"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Drug / Analyte</label>
-                <input
-                  className="form-input"
-                  value={drugName}
-                  onChange={(e) => setDrugName(e.target.value)}
-                  placeholder="Example: Metformin"
-                />
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Sample matrix</label>
-                <select
-                  className="form-select"
-                  value={sampleType}
-                  onChange={(e) =>
-                    setSampleType(
-                      e.target.value as (typeof sampleTypes)[number]
-                    )
-                  }
-                >
-                  {sampleTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-field">
-                <label className="form-label">Technique</label>
-                <select
-                  className="form-select"
-                  value={technique}
-                  onChange={(e) =>
-                    setTechnique(
-                      e.target.value as (typeof techniques)[number]
-                    )
-                  }
-                >
-                  {techniques.map((tech) => (
-                    <option key={tech} value={tech}>
-                      {tech}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {alreadyGeneratedWarning && (
-              <p className="small-muted" style={{ color: "#f97373" }}>
-                {alreadyGeneratedWarning}
-              </p>
-            )}
-
-            <div className="form-actions">
-              <button className="btn-primary" onClick={handleGenerate}>
-                Generate method (demo)
-              </button>
-            </div>
+            {/* rest of your existing content here */}
           </div>
         </div>
-      </section>
 
-      {result && (
-        <>
-          {certificate && (
-            <section style={{ marginTop: "1.5rem" }}>
-              <div className="result-card">
-                <h3>LCForge Generated Method Certificate (Demo)</h3>
-                <dl>
-                  <div>
-                    <dt>Drug</dt>
-                    <dd>{drugName.trim() || "Drug"}</dd>
-                  </div>
-                  <div>
-                    <dt>Generated For</dt>
-                    <dd>{scientistName || "Scientist (demo)"}</dd>
-                  </div>
-                  <div>
-                    <dt>Company</dt>
-                    <dd>{company || "Organization (demo)"}</dd>
-                  </div>
-                  <div>
-                    <dt>Email</dt>
-                    <dd>{email || "email@demo.local"}</dd>
-                  </div>
-                  <div>
-                    <dt>Instrument</dt>
-                    <dd>{instrument || technique}</dd>
-                  </div>
-                  <div>
-                    <dt>Method ID</dt>
-                    <dd>{certificate.methodId}</dd>
-                  </div>
-                  <div>
-                    <dt>Generation Date</dt>
-                    <dd>{new Date(certificate.timestamp).toLocaleString()}</dd>
-                  </div>
-                  <div>
-                    <dt>Confidential Method Fingerprint</dt>
-                    <dd>{certificate.fingerprint}</dd>
-                  </div>
-                </dl>
-                <p className="small-muted">
-                  This chromatographic method is generated exclusively for the
-                  above user by LCForge AI (demo). This method is confidential
-                  and reserved for the requesting organization. Unauthorized
-                  reproduction or redistribution is discouraged.
-                </p>
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="form-label">Scientist name</label>
+            <input
+              className="form-input"
+              value={scientistName}
+              onChange={(e) => setScientistName(e.target.value)}
+              placeholder="Dr. Mani Kumar"
+            />
+          </div>
 
-                <div
-                  style={{
-                    marginTop: "0.75rem",
-                    padding: "0.75rem",
-                    borderRadius: "0.75rem",
-                    border: "1px dashed rgba(148, 163, 184, 0.7)",
-                    background: "rgba(15, 23, 42, 0.9)",
-                  }}
-                >
-                  <h4
-                    style={{
-                      margin: "0 0 0.4rem",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Payment (demo only)
-                  </h4>
-                 <p
-  className="small-muted"
-  style={{ marginBottom: "0.4rem" }}
->
-  This payment section is for demonstration only. The UPI details shown are
-  examples, and no actual payment can or will be processed through this
-  interface.
-</p>
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      margin: "0 0 0.25rem",
-                    }}
-                  >
-                    <strong>Payment for:</strong> LCForge Method Generation
-                    (demo)
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      margin: "0 0 0.25rem",
-                    }}
-                  >
-                    <strong>UPI ID:</strong> lcforge-demo@upi
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "0.8rem",
-                      margin: "0 0 0.5rem",
-                    }}
-                  >
-                    <strong>Amount (example):</strong> ₹499 per method (demo)
-                  </p>
-                  <p className="small-muted">
-                    After completing payment in your UPI app, tick the box below
-                    to unlock PDF download (demo only, no server verification).
-                  </p>
+          <div className="form-field">
+            <label className="form-label">Email</label>
+            <input
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
 
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
-                      fontSize: "0.8rem",
-                      marginTop: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isPaidDemo}
-                      onChange={(e) => setIsPaidDemo(e.target.checked)}
-                    />
-                    I confirm I have completed UPI payment (demo).
-                  </label>
-                </div>
+          <div className="form-field">
+            <label className="form-label">Organization / Company</label>
+            <input
+              className="form-input"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Agape Bio / CRO"
+            />
+          </div>
 
-                <button
-                  className="outline-button"
-                  style={{
-                    marginTop: "0.75rem",
-                    opacity: isPaidDemo ? 1 : 0.5,
-                    cursor: isPaidDemo ? "pointer" : "not-allowed",
-                  }}
-                  onClick={isPaidDemo ? handleDownloadPdf : undefined}
-                >
-                  Download Method as PDF (demo)
-                </button>
-              </div>
-            </section>
-          )}
+          <div className="form-field">
+            <label className="form-label">Designation</label>
+            <input
+              className="form-input"
+              value={designation}
+              onChange={(e) => setDesignation(e.target.value)}
+              placeholder="Analytical Scientist"
+            />
+          </div>
 
-          <section className="results">
+          <div className="form-field">
+            <label className="form-label">Instrument</label>
+            <input
+              className="form-input"
+              value={instrument}
+              onChange={(e) => setInstrument(e.target.value)}
+              placeholder="HPLC / UPLC / LC‑MS/MS"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Column</label>
+            <input
+              className="form-input"
+              value={columnType}
+              onChange={(e) => setColumnType(e.target.value)}
+              placeholder="C18, 150 × 4.6 mm, 5 µm"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Drug / Analyte</label>
+            <input
+              className="form-input"
+              value={drugName}
+              onChange={(e) => setDrugName(e.target.value)}
+              placeholder="Example: Metformin"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Sample matrix</label>
+            <select
+              className="form-select"
+              value={sampleType}
+              onChange={(e) =>
+                setSampleType(
+                  e.target.value as (typeof sampleTypes)[number]
+                )
+              }
+            >
+              {sampleTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Technique</label>
+            <select
+              className="form-select"
+              value={technique}
+              onChange={(e) =>
+                setTechnique(
+                  e.target.value as (typeof techniques)[number]
+                )
+              }
+            >
+              {techniques.map((tech) => (
+                <option key={tech} value={tech}>
+                  {tech}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {alreadyGeneratedWarning && (
+          <p className="small-muted" style={{ color: "#f97373" }}>
+            {alreadyGeneratedWarning}
+          </p>
+        )}
+
+        <div className="form-actions">
+          <button className="btn-primary" onClick={handleGenerate}>
+            Generate method (demo)
+          </button>
+        </div>
+    </div>
+        </div >
+      </section >
+
+    { result && (
+      <>
+        {certificate && (
+          <section style={{ marginTop: "1.5rem" }}>
             <div className="result-card">
-              <h3>Proposed LC Method</h3>
+              <h3>LCForge Generated Method Certificate (Demo)</h3>
               <dl>
                 <div>
                   <dt>Drug</dt>
                   <dd>{drugName.trim() || "Drug"}</dd>
                 </div>
                 <div>
-                  <dt>Sample type</dt>
-                  <dd>{sampleType}</dd>
+                  <dt>Generated For</dt>
+                  <dd>{scientistName || "Scientist (demo)"}</dd>
                 </div>
                 <div>
-                  <dt>Technique</dt>
-                  <dd>{technique}</dd>
+                  <dt>Company</dt>
+                  <dd>{company || "Organization (demo)"}</dd>
                 </div>
                 <div>
-                  <dt>Column</dt>
-                  <dd>{result!.method.column}</dd>
+                  <dt>Email</dt>
+                  <dd>{email || "email@demo.local"}</dd>
                 </div>
                 <div>
-                  <dt>Mobile phase</dt>
-                  <dd>{result!.method.mobilePhase}</dd>
+                  <dt>Instrument</dt>
+                  <dd>{instrument || technique}</dd>
                 </div>
                 <div>
-                  <dt>Flow rate</dt>
-                  <dd>{result!.method.flowRate}</dd>
+                  <dt>Method ID</dt>
+                  <dd>{certificate.methodId}</dd>
                 </div>
                 <div>
-                  <dt>Detection</dt>
-                  <dd>{result!.method.detection}</dd>
+                  <dt>Generation Date</dt>
+                  <dd>{new Date(certificate.timestamp).toLocaleString()}</dd>
                 </div>
                 <div>
-                  <dt>Run time</dt>
-                  <dd>{result!.method.runtime}</dd>
+                  <dt>Confidential Method Fingerprint</dt>
+                  <dd>{certificate.fingerprint}</dd>
                 </div>
               </dl>
-              <p className="small-muted">{result!.method.notes}</p>
-            </div>
+              <p className="small-muted">
+                This chromatographic method is generated exclusively for the
+                above user by LCForge AI (demo). This method is confidential
+                and reserved for the requesting organization. Unauthorized
+                reproduction or redistribution is discouraged.
+              </p>
 
-            <div className="result-card">
-              <h3>Key Literature (demo)</h3>
-              <ul>
-                {result!.literature.map((lit, idx) => (
-                  <li key={idx}>
-                    <p className="lit-title">{lit.title}</p>
-                    <p className="lit-meta">
-                      {lit.journal}, {lit.year}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div
+                style={{
+                  marginTop: "0.75rem",
+                  padding: "0.75rem",
+                  borderRadius: "0.75rem",
+                  border: "1px dashed rgba(148, 163, 184, 0.7)",
+                  background: "rgba(15, 23, 42, 0.9)",
+                }}
+              >
+                <h4
+                  style={{
+                    margin: "0 0 0.4rem",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Payment (demo only)
+                </h4>
+                <p
+                  className="small-muted"
+                  style={{ marginBottom: "0.4rem" }}
+                >
+                  This payment section is for demonstration only. The UPI details shown are
+                  examples, and no actual payment can or will be processed through this
+                  interface.
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.25rem",
+                  }}
+                >
+                  <strong>Payment for:</strong> LCForge Method Generation
+                  (demo)
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.25rem",
+                  }}
+                >
+                  <strong>UPI ID:</strong> lcforge-demo@upi
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.5rem",
+                  }}
+                >
+                  <strong>Amount (example):</strong> ₹499 per method (demo)
+                </p>
+                <p className="small-muted">
+                  After completing payment in your UPI app, tick the box below
+                  to unlock PDF download (demo only, no server verification).
+                </p>
 
-            <div className="result-card">
-              <h3>Drug Properties (demo)</h3>
-              <dl>
-                <div>
-                  <dt>logP</dt>
-                  <dd>{result!.properties.logP}</dd>
-                </div>
-                <div>
-                  <dt>pKa</dt>
-                  <dd>{result!.properties.pKa}</dd>
-                </div>
-                <div>
-                  <dt>Solubility</dt>
-                  <dd>{result!.properties.solubility}</dd>
-                </div>
-              </dl>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    fontSize: "0.8rem",
+                    marginTop: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isPaidDemo}
+                    onChange={(e) => setIsPaidDemo(e.target.checked)}
+                  />
+                  I confirm I have completed UPI payment (demo).
+                </label>
+              </div>
+
+              <button
+                className="outline-button"
+                style={{
+                  marginTop: "0.75rem",
+                  opacity: isPaidDemo ? 1 : 0.5,
+                  cursor: isPaidDemo ? "pointer" : "not-allowed",
+                }}
+                onClick={isPaidDemo ? handleDownloadPdf : undefined}
+              >
+                Download Method as PDF (demo)
+              </button>
             </div>
           </section>
-        </>
-      )}
-    </div>
+        )}
+
+        <section className="results">
+          <div className="result-card">
+            <h3>Proposed LC Method</h3>
+            <dl>
+              <div>
+                <dt>Drug</dt>
+                <dd>{drugName.trim() || "Drug"}</dd>
+              </div>
+              <div>
+                <dt>Sample type</dt>
+                <dd>{sampleType}</dd>
+              </div>
+              <div>
+                <dt>Technique</dt>
+                <dd>{technique}</dd>
+              </div>
+              <div>
+                <dt>Column</dt>
+                <dd>{result!.method.column}</dd>
+              </div>
+              <div>
+                <dt>Mobile phase</dt>
+                <dd>{result!.method.mobilePhase}</dd>
+              </div>
+              <div>
+                <dt>Flow rate</dt>
+                <dd>{result!.method.flowRate}</dd>
+              </div>
+              <div>
+                <dt>Detection</dt>
+                <dd>{result!.method.detection}</dd>
+              </div>
+              <div>
+                <dt>Run time</dt>
+                <dd>{result!.method.runtime}</dd>
+              </div>
+            </dl>
+            <p className="small-muted">{result!.method.notes}</p>
+          </div>
+
+          <div className="result-card">
+            <h3>Key Literature (demo)</h3>
+            <ul>
+              {result!.literature.map((lit, idx) => (
+                <li key={idx}>
+                  <p className="lit-title">{lit.title}</p>
+                  <p className="lit-meta">
+                    {lit.journal}, {lit.year}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="result-card">
+            <h3>Drug Properties (demo)</h3>
+            <dl>
+              <div>
+                <dt>logP</dt>
+                <dd>{result!.properties.logP}</dd>
+              </div>
+              <div>
+                <dt>pKa</dt>
+                <dd>{result!.properties.pKa}</dd>
+              </div>
+              <div>
+                <dt>Solubility</dt>
+                <dd>{result!.properties.solubility}</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </>
+    )
+}
+    </div >
   );
 }

@@ -38,6 +38,16 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.glass-card {
+  background: rgba(15, 23, 42, 0.85);
+  /* dark glass */
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.65);
+  padding: 1.5rem;
+  backdrop-filter: blur(16px);
+}
+
 .navbar-left {
   display: flex;
   align-items: center;
@@ -259,7 +269,7 @@ body {
   font-size: 0.8rem;
 }
 
-.result-card dl > div {
+.result-card dl>div {
   margin-bottom: 0.3rem;
 }
 
@@ -374,6 +384,7 @@ body {
     gap: 0.4rem;
   }
 }
+
 /* ===== Layout shell ===== */
 
 .app-shell {
@@ -522,6 +533,7 @@ body {
   padding: 18px 22px 22px;
   overflow-y: auto;
 }
+
 .home-page-shell {
   max-width: 1120px;
   margin: 0 auto;

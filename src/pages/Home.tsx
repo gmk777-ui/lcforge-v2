@@ -326,253 +326,250 @@ export default function HomePage() {
           <button className="btn-primary" onClick={handleGenerate}>
             Generate method (demo)
           </button>
-        </div> {/* closes inner div */}
-    </div>   {/* closes outer div */ }
-  </section > {/* closes the section */ }
+        </div>
+    </div>
+  </section >
 
-  {
-    result && (
+    { result && (
       <>
         {certificate && (
-          <>
-            {certificate && (
-              <section style={{ marginTop: "1.5rem" }}>
-                <div className="result-card">
-                  <h3>LCForge Generated Method Certificate (Demo)</h3>
-                  <dl>
-                    <div>
-                      <dt>Drug</dt>
-                      <dd>{drugName.trim() || "Drug"}</dd>
-                    </div>
-                    <div>
-                      <dt>Generated For</dt>
-                      <dd>{scientistName || "Scientist (demo)"}</dd>
-                    </div>
-                    <div>
-                      <dt>Company</dt>
-                      <dd>{company || "Organization (demo)"}</dd>
-                    </div>
-                    <div>
-                      <dt>Email</dt>
-                      <dd>{email || "email@demo.local"}</dd>
-                    </div>
-                    <div>
-                      <dt>Instrument</dt>
-                      <dd>{instrument || technique}</dd>
-                    </div>
-                    <div>
-                      <dt>Method ID</dt>
-                      <dd>{certificate.methodId}</dd>
-                    </div>
-                    <div>
-                      <dt>Generation Date</dt>
-                      <dd>{new Date(certificate.timestamp).toLocaleString()}</dd>
-                    </div>
-                    <div>
-                      <dt>Confidential Method Fingerprint</dt>
-                      <dd>{certificate.fingerprint}</dd>
-                    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  </dl>
-                  <p className="small-muted">
-                    This chromatographic method is generated exclusively for the
-                    above user by LCForge AI (demo). This method is confidential
-                    and reserved for the requesting organization. Unauthorized
-                    reproduction or redistribution is discouraged.
-                  </p>
-
-                  <div
-                    style={{
-                      marginTop: "0.75rem",
-                      padding: "0.75rem",
-                      borderRadius: "0.75rem",
-                      border: "1px dashed rgba(148, 163, 184, 0.7)",
-                      background: "rgba(15, 23, 42, 0.9)",
-                    }}
-                  >
-                    <h4
-                      style={{
-                        margin: "0 0 0.4rem",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      Payment (demo only)
-                    </h4>
-                    <p
-                      className="small-muted"
-                      style={{ marginBottom: "0.4rem" }}
-                    >
-                      This payment section is for demonstration only. The UPI details shown are
-                      examples, and no actual payment can or will be processed through this
-                      interface.
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.8rem",
-                        margin: "0 0 0.25rem",
-                      }}
-                    >
-                      <strong>Payment for:</strong> LCForge Method Generation
-                      (demo)
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.8rem",
-                        margin: "0 0 0.25rem",
-                      }}
-                    >
-                      <strong>UPI ID:</strong> lcforge-demo@upi
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.8rem",
-                        margin: "0 0 0.5rem",
-                      }}
-                    >
-                      <strong>Amount (example):</strong> ₹499 per method (demo)
-                    </p>
-                    <p className="small-muted">
-                      After completing payment in your UPI app, tick the box below
-                      to unlock PDF download (demo only, no server verification).
-                    </p>
-
-                    <label
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontSize: "0.8rem",
-                        marginTop: "0.5rem",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isPaidDemo}
-                        onChange={(e) => setIsPaidDemo(e.target.checked)}
-                      />
-                      I confirm I have completed UPI payment (demo).
-                    </label>
-                  </div>
-
-                  <button
-                    className="outline-button"
-                    style={{
-                      marginTop: "0.75rem",
-                      opacity: isPaidDemo ? 1 : 0.5,
-                      cursor: isPaidDemo ? "pointer" : "not-allowed",
-                    }}
-                    onClick={isPaidDemo ? handleDownloadPdf : undefined}
-                  >
-                    Download Method as PDF (demo)
-                  </button>
+          <section style={{ marginTop: "1.5rem" }}>
+            <div className="result-card">
+              <h3>LCForge Generated Method Certificate (Demo)</h3>
+              <dl>
+                <div>
+                  <dt>Drug</dt>
+                  <dd>{drugName.trim() || "Drug"}</dd>
                 </div>
-              </section>
-            )}
+                <div>
+                  <dt>Generated For</dt>
+                  <dd>{scientistName || "Scientist (demo)"}</dd>
+                </div>
+                <div>
+                  <dt>Company</dt>
+                  <dd>{company || "Organization (demo)"}</dd>
+                </div>
+                <div>
+                  <dt>Email</dt>
+                  <dd>{email || "email@demo.local"}</dd>
+                </div>
+                <div>
+                  <dt>Instrument</dt>
+                  <dd>{instrument || technique}</dd>
+                </div>
+                <div>
+                  <dt>Method ID</dt>
+                  <dd>{certificate.methodId}</dd>
+                </div>
+                <div>
+                  <dt>Generation Date</dt>
+                  <dd>{new Date(certificate.timestamp).toLocaleString()}</dd>
+                </div>
+                <div>
+                  <dt>Confidential Method Fingerprint</dt>
+                  <dd>{certificate.fingerprint}</dd>
+                </div>
 
-            <section className="results">
-              <div className="result-card">
-                <h3>Proposed LC Method</h3>
-                <dl>
-                  <div>
-                    <dt>Drug</dt>
-                    <dd>{drugName.trim() || "Drug"}</dd>
-                  </div>
-                  <div>
-                    <dt>Sample type</dt>
-                    <dd>{sampleType}</dd>
-                  </div>
-                  <div>
-                    <dt>Technique</dt>
-                    <dd>{technique}</dd>
-                  </div>
-                  <div>
-                    <dt>Column</dt>
-                    <dd>{result!.method.column}</dd>
-                  </div>
-                  <div>
-                    <dt>Mobile phase</dt>
-                    <dd>{result!.method.mobilePhase}</dd>
-                  </div>
-                  <div>
-                    <dt>Flow rate</dt>
-                    <dd>{result!.method.flowRate}</dd>
-                  </div>
-                  <div>
-                    <dt>Detection</dt>
-                    <dd>{result!.method.detection}</dd>
-                  </div>
-                  <div>
-                    <dt>Run time</dt>
-                    <dd>{result!.method.runtime}</dd>
-                  </div>
-                </dl>
-                <p className="small-muted">{result!.method.notes}</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </dl>
+              <p className="small-muted">
+                This chromatographic method is generated exclusively for the
+                above user by LCForge AI (demo). This method is confidential
+                and reserved for the requesting organization. Unauthorized
+                reproduction or redistribution is discouraged.
+              </p>
+
+              <div
+                style={{
+                  marginTop: "0.75rem",
+                  padding: "0.75rem",
+                  borderRadius: "0.75rem",
+                  border: "1px dashed rgba(148, 163, 184, 0.7)",
+                  background: "rgba(15, 23, 42, 0.9)",
+                }}
+              >
+                <h4
+                  style={{
+                    margin: "0 0 0.4rem",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Payment (demo only)
+                </h4>
+                <p
+                  className="small-muted"
+                  style={{ marginBottom: "0.4rem" }}
+                >
+                  This payment section is for demonstration only. The UPI details shown are
+                  examples, and no actual payment can or will be processed through this
+                  interface.
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.25rem",
+                  }}
+                >
+                  <strong>Payment for:</strong> LCForge Method Generation
+                  (demo)
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.25rem",
+                  }}
+                >
+                  <strong>UPI ID:</strong> lcforge-demo@upi
+                </p>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    margin: "0 0 0.5rem",
+                  }}
+                >
+                  <strong>Amount (example):</strong> ₹499 per method (demo)
+                </p>
+                <p className="small-muted">
+                  After completing payment in your UPI app, tick the box below
+                  to unlock PDF download (demo only, no server verification).
+                </p>
+
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    fontSize: "0.8rem",
+                    marginTop: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isPaidDemo}
+                    onChange={(e) => setIsPaidDemo(e.target.checked)}
+                  />
+                  I confirm I have completed UPI payment (demo).
+                </label>
               </div>
 
-              <div className="result-card">
-                <h3>Key Literature (demo)</h3>
-                <ul>
-                  {result!.literature.map((lit, idx) => (
-                    <li key={idx}>
-                      <p className="lit-title">{lit.title}</p>
-                      <p className="lit-meta">
-                        {lit.journal}, {lit.year}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <button
+                className="outline-button"
+                style={{
+                  marginTop: "0.75rem",
+                  opacity: isPaidDemo ? 1 : 0.5,
+                  cursor: isPaidDemo ? "pointer" : "not-allowed",
+                }}
+                onClick={isPaidDemo ? handleDownloadPdf : undefined}
+              >
+                Download Method as PDF (demo)
+              </button>
+            </div>
+          </section>
+        )}
 
-              <div className="result-card">
-                <h3>Drug Properties (demo)</h3>
-                <dl>
-                  <div>
-                    <dt>logP</dt>
-                    <dd>{result!.properties.logP}</dd>
-                  </div>
-                  <div>
-                    <dt>pKa</dt>
-                    <dd>{result!.properties.pKa}</dd>
-                  </div>
-                  <div>
-                    <dt>Solubility</dt>
-                    <dd>{result!.properties.solubility}</dd>
-                  </div>
-                </dl>
+        <section className="results">
+          <div className="result-card">
+            <h3>Proposed LC Method</h3>
+            <dl>
+              <div>
+                <dt>Drug</dt>
+                <dd>{drugName.trim() || "Drug"}</dd>
               </div>
-            </section>
-          </>
-        )
-        }
+              <div>
+                <dt>Sample type</dt>
+                <dd>{sampleType}</dd>
+              </div>
+              <div>
+                <dt>Technique</dt>
+                <dd>{technique}</dd>
+              </div>
+              <div>
+                <dt>Column</dt>
+                <dd>{result!.method.column}</dd>
+              </div>
+              <div>
+                <dt>Mobile phase</dt>
+                <dd>{result!.method.mobilePhase}</dd>
+              </div>
+              <div>
+                <dt>Flow rate</dt>
+                <dd>{result!.method.flowRate}</dd>
+              </div>
+              <div>
+                <dt>Detection</dt>
+                <dd>{result!.method.detection}</dd>
+              </div>
+              <div>
+                <dt>Run time</dt>
+                <dd>{result!.method.runtime}</dd>
+              </div>
+            </dl>
+            <p className="small-muted">{result!.method.notes}</p>
+          </div>
+
+          <div className="result-card">
+            <h3>Key Literature (demo)</h3>
+            <ul>
+              {result!.literature.map((lit, idx) => (
+                <li key={idx}>
+                  <p className="lit-title">{lit.title}</p>
+                  <p className="lit-meta">
+                    {lit.journal}, {lit.year}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="result-card">
+            <h3>Drug Properties (demo)</h3>
+            <dl>
+              <div>
+                <dt>logP</dt>
+                <dd>{result!.properties.logP}</dd>
+              </div>
+              <div>
+                <dt>pKa</dt>
+                <dd>{result!.properties.pKa}</dd>
+              </div>
+              <div>
+                <dt>Solubility</dt>
+                <dd>{result!.properties.solubility}</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </>
+    )
+}
       </div >
   );
   }

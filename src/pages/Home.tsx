@@ -325,14 +325,15 @@ export default function HomePage() {
         <div className="form-actions">
           <button className="btn-primary" onClick={handleGenerate}>
             Generate method (demo)
-          </button>
+            </button>
+          </div>
         </div>
-    </div>
-  </section >
+      </section>
 
-    { result && (
-      <>
-        {certificate && (
+      {result && (
+        <>
+          {certificate && (
+
           <section style={{ marginTop: "1.5rem" }}>
             <div className="result-card">
               <h3>LCForge Generated Method Certificate (Demo)</h3>

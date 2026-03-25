@@ -327,7 +327,6 @@ export default function HomePage() {
             Generate method (demo)
             </button>
           </div>
-        </div>
       </section>
 
       {result && (

@@ -480,6 +480,47 @@ export default function Home() {
           </section>
         </>
       )}
+      <section id="about" className="static-section">
+        <h2>About LCForge AI</h2>
+        <p>
+          LCForge AI was founded by Dr. Mani Kumar, who holds a doctorate in Pharmacy
+          in Pharmaceutical Analysis with a focus on chromatography. He has extensive
+          collaboration with research and industry in impurity profiling, method
+          development, and stability studies using HPLC, preparative HPLC, and LC‑MS,
+          alongside many years of teaching experience at university level.
+        </p>
+        <p>
+          Drawing on this deep chromatography background and a passion for innovation,
+          LCForge AI was created as an AI‑driven assistant to propose new LC methods
+          based on Quality by Design (QbD) principles and White Analytical Chemistry
+          (WAC). The goal is to guide scientists toward robust, precise, and accurate
+          methods that reduce chemical consumption, analyst effort, and environmental
+          impact.
+        </p>
+        <p>
+          By comparing existing methods for a given drug and emphasizing greener
+          solvents and optimized flow rates, LCForge AI aims to suggest unique,
+          documentation‑ready methods that can support regulatory submissions such as
+          NDAs and ANDAs, while keeping expert chromatographic judgment at the center.
+        </p>
+      </section>
+      <section id="contact" className="static-section">
+        <h2>Contact</h2>
+        <p>
+          For collaboration, feedback, or questions about LCForge AI, you can reach
+          Dr. Mani Kumar at:
+        </p>
+        <p>
+          <strong>Mobile:</strong> +91 86249 58770<br />
+          <strong>Email:</strong> LCforgeAI@outlook.com
+        </p>
+        <p>
+          <strong>Demo payment details (UPI):</strong> 9492508770@apl
+          <br />
+          These payment details are currently used for demonstration and testing
+          within the LCForge AI prototype.
+        </p>
+      </section>
     </div>
   );
 }

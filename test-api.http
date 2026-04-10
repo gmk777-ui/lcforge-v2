@@ -1,0 +1,10 @@
+POST http://localhost:5000/api/generate
+Content-Type: application/json
+
+{
+  "drugName": "Paracetamol",
+  "sampleType": "Tablet",
+  "technique": "HPLC"
+}
+GET http://localhost:5000/health
+

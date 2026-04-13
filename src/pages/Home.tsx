@@ -111,6 +111,7 @@ function Home() {
           drugName,
           sampleType,
           technique,
+          constraints: ""
         }),
       });
 

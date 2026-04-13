@@ -1,10 +1,13 @@
+### Paracetamol AI test
 POST http://localhost:5000/api/generate
 Content-Type: application/json
 
 {
   "drugName": "Paracetamol",
   "sampleType": "Tablet",
-  "technique": "HPLC"
+  "technique": "HPLC",
+  "constraints": ""
 }
-GET http://localhost:5000/health
 
+### Health check
+GET http://localhost:5000/health

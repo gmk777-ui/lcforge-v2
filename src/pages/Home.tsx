@@ -57,7 +57,9 @@ interface Certificate {
 }
 
 function Home() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://lcforge-v2.onrender.com";
+
+  console.log("LCForge backendUrl at startup:", backendUrl);
 
   const sampleTypes = [
     "API",

@@ -141,6 +141,7 @@ Prioritize: QbD (CMA, CPP, CQA), stability-indicating, ICH Q2(R1) validation-rea
             sampleType,
             technique,
             backendVersion: "0.3-ai-live",
+            plan: "free", // we will later switch to "pro"
             tokens: completion?.usage || null,  // Optional: track costs
         },
     });

@@ -82,6 +82,7 @@ function Home() {
   const [backendStatus, setBackendStatus] = useState<string>(
     "Checking backend..."
   );
+  const [plan, setPlan] = useState<"free" | "pro" | null>(null);
   const [generateStatus, setGenerateStatus] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -122,7 +123,10 @@ function Home() {
         throw new Error(`Backend error: ${response.status} ${text}`);
       }
 
-      const data = await response.json();
+
+      if (data?.meta?.plan) {
+        setPlan(data.meta.plan);
+      }
 
       if (data.mode === "ai_live") {
         setGenerateStatus("AI-generated LC method (live mode).");
@@ -475,6 +479,11 @@ function Home() {
       )}
       <p className="text-xs text-slate-500 text-center mt-8">
         Backend status: {backendStatus}
+        {plan === "free" && (
+          <div style={{ marginTop: 8, marginBottom: 16, padding: 8, border: "1px solid #facc15", background: "#fefce8", color: "#854d0e", fontSize: 14 }}>
+            LCForge Free Demo: limited AI runs and basic templates. Pro version with advanced QbD reports & higher limits coming soon.
+          </div>
+        )}
       </p>
     </div>
   );

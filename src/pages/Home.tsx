@@ -152,11 +152,9 @@ function Home() {
 
       // Update generate status based on mode
       if (data.mode === "ai_live") {
-        setGenerateStatus("AI-generated LC method (live mode).");
+        setGenerateStatus("AI‑generated LC method.");
       } else if (data.mode === "demo_fallback") {
-        setGenerateStatus("Demo fallback method (no AI quota / AI error).");
-      } else {
-        setGenerateStatus("");
+        setGenerateStatus("Fallback template method (AI temporarily unavailable).");
       }
 
       setBackendStatus("Backend is reachable and responding.");
@@ -204,7 +202,7 @@ function Home() {
         <section className="hero">
           <div className="hero-grid">
             <div className="hero-text">
-              <div className="pill">LCForge AI · Demo</div>
+              <div className="pill">LCForge AI</div>
               <h1>
                 AI‑assisted LC method design for{" "}
                 <span className="highlight">real‑world pharma labs</span>
@@ -371,7 +369,7 @@ function Home() {
                 </p>
                 <pre className="result-pre">
                   {result.physicochemicalSummary ||
-                    "Demo: physicochemical summary will appear here based on the AI output."}
+                    "Physicochemical summary will appear here based on the AI output."}
                 </pre>
               </div>
 
@@ -400,7 +398,7 @@ Runtime: ${result.method?.runtime || "N/A"}`}
                 <pre className="result-pre">
                   {result.literatureSummary ||
                     result.qbdNotes ||
-                    "Demo: literature / QbD notes will appear here based on the AI output."}
+                    "Literature / QbD notes will appear here based on the AI output."}
                 </pre>
               </div>
             </div>
@@ -419,7 +417,7 @@ Runtime: ${result.method?.runtime || "N/A"}`}
                   onChange={(e) => setPaymentConfirmed(e.target.checked)}
                   style={{ marginRight: "0.5rem" }}
                 />
-                I confirm that demo payment has been made.
+                I confirm that payment has been made.
               </label>
 
               <button
@@ -430,7 +428,7 @@ Runtime: ${result.method?.runtime || "N/A"}`}
               >
                 {isPdfGenerating
                   ? "Preparing PDF..."
-                  : "Download Method as PDF (demo)"}
+                  : "Download Method as PDF"}
               </button>
             </div>
           </section>

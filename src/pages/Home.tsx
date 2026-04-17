@@ -89,10 +89,10 @@ function Home() {
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   useEffect(() => {
-    fetch("http://localhost:5000/health")
+    fetch(`${backendUrl}/health`)
       .then((res) => res.json())
-      .then((data) => {
-        setBackendStatus(`${data.status} - ${data.message}`);
+      .then((health) => {
+        setBackendStatus(`${health.status} - ${health.message}`);
       })
       .catch((err) => {
         console.error(err);
@@ -114,7 +114,7 @@ function Home() {
           drugName,
           sampleType,
           technique,
-          constraints: ""
+          constraints: "",
         }),
       });
 
@@ -123,11 +123,34 @@ function Home() {
         throw new Error(`Backend error: ${response.status} ${text}`);
       }
 
+      const data = await response.json();
 
-      if (data?.meta?.plan) {
+      // Update plan from backend meta
+      if (data && data.meta && data.meta.plan) {
         setPlan(data.meta.plan);
       }
 
+      // Store the method result (adjust if your shape is different)
+      if (data.result) {
+        setResult(data.result);
+
+        const methodId = data.result.methodId || "DEMO-METHOD";
+
+        const fingerprint = buildFingerprint({
+          drug: drugName || "Drug",
+          column: data.result.method?.column || "Column",
+          instrument: instrument || technique,
+          email: email || "email@demo.local",
+        });
+
+        setCertificate({
+          methodId,
+          timestamp: Date.now(),
+          fingerprint,
+        });
+      }
+
+      // Update generate status based on mode
       if (data.mode === "ai_live") {
         setGenerateStatus("AI-generated LC method (live mode).");
       } else if (data.mode === "demo_fallback") {
@@ -136,44 +159,15 @@ function Home() {
         setGenerateStatus("");
       }
 
-      const newResult: ExampleResult =
-        data.result || buildExampleResult(drugName);
-      setResult(newResult);
-
-      const newCert: Certificate = {
-        methodId: `LCF-DEMO-${Date.now().toString(36).toUpperCase()}`,
-        timestamp: Date.now(),
-        fingerprint: buildFingerprint({
-          drug: drugName || "Drug",
-          column: newResult.method.column,
-          instrument: instrument || technique,
-          email: email || "email@demo.local",
-        }),
-      };
-      setCertificate(newCert);
-
-      setGenerateStatus("Backend generation completed.");
-    } catch (err: any) {
-      console.error(err);
-      setErrorMessage(err.message || "Error connecting to backend.");
+      setBackendStatus("Backend is reachable and responding.");
+    } catch (error: any) {
+      console.error("Error contacting LCForge backend:", error);
       setGenerateStatus("Error contacting LCForge backend. Please try again.");
+      setBackendStatus("Error connecting to backend");
     } finally {
       setIsLoading(false);
     }
   }
-
-  async function testGenerateFromBackend() {
-    try {
-      setGenerateStatus("Quick health check...");
-      const res = await fetch(`${backendUrl}/health`);
-      const data = await res.json();
-      setGenerateStatus(`Health: ${data.status} - ${data.message}`);
-    } catch (err) {
-      console.error(err);
-      setGenerateStatus("Error calling /health");
-    }
-  }
-
   function handleDownloadPdf() {
     if (!result || !certificate) return;
     if (!paymentConfirmed) {
@@ -366,124 +360,85 @@ function Home() {
       </div>
       {result && (
         <>
-          {certificate && (
-            <section style={{ marginTop: "1.5rem" }}>
-              <div className="certificate-card">
-                <label
-                  className="small-muted"
-                  style={{ display: "block", marginBottom: "0.5rem" }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={paymentConfirmed}
-                    onChange={(e) => setPaymentConfirmed(e.target.checked)}
-                    style={{ marginRight: "0.5rem" }}
-                  />
-                  I confirm that demo payment has been made.
-                </label>
-
-                <button
-                  type="button"
-                  onClick={handleDownloadPdf}
-                  className="primary-button"
-                  disabled={!paymentConfirmed || isPdfGenerating}
-                >
-                  {isPdfGenerating ? "Preparing PDF..." : "Download Method as PDF (demo)"}
-                </button>
-              </div>
-            </section>
-          )}
-
-          <section className="results">
-            <div className="result-card">
-              <h3>Proposed LC Method</h3>
-              <dl>
-                <div>
-                  <dt>Drug</dt>
-                  <dd>{drugName.trim() || "Drug"}</dd>
-                </div>
-                <div>
-                  <dt>Sample type</dt>
-                  <dd>{sampleType}</dd>
-                </div>
-                <div>
-                  <dt>Technique</dt>
-                  <dd>{technique}</dd>
-                </div>
-                <div>
-                  <dt>Column</dt>
-                  <dd>{result.method.column}</dd>
-                </div>
-                <div>
-                  <dt>Mobile phase</dt>
-                  <dd>{result.method.mobilePhase}</dd>
-                </div>
-                <div>
-                  <dt>Flow rate</dt>
-                  <dd>{result.method.flowRate}</dd>
-                </div>
-                <div>
-                  <dt>Detection</dt>
-                  <dd>{result.method.detection}</dd>
-                </div>
-                <div>
-                  <dt>Run time</dt>
-                  <dd>{result.method.runtime}</dd>
-                </div>
-              </dl>
-              <p className="small-muted">{result.method.notes}</p>
-              {generateStatus && (
-                <p className="text-xs text-slate-600 mt-2 text-center">
-                  {generateStatus}
+          {/* 3 result cards */}
+          <section style={{ marginTop: "1.5rem" }}>
+            <div className="result-grid">
+              {/* Card 1: Physico‑chemical summary */}
+              <div className="result-card">
+                <h3>Physico‑chemical summary</h3>
+                <p className="small-muted">
+                  Key information about the molecule and matrix.
                 </p>
-              )}
-            </div>
+                <pre className="result-pre">
+                  {result.physicochemicalSummary ||
+                    "Demo: physicochemical summary will appear here based on the AI output."}
+                </pre>
+              </div>
 
-            <div className="result-card">
-              <h3>Key Literature (demo)</h3>
-              <ul>
-                {result.literature.map((lit, idx) => (
-                  <li key={idx}>
-                    <p className="lit-title">{lit.title}</p>
-                    <p className="lit-meta">
-                      {lit.journal}, {lit.year}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              {/* Card 2: Suggested LC method */}
+              <div className="result-card">
+                <h3>Suggested LC method</h3>
+                <p className="small-muted">
+                  Column, mobile phase, flow rate, detection and runtime.
+                </p>
+                <pre className="result-pre">
+                  {result.methodSummary ||
+                    `Column: ${result.method?.column || "N/A"}
+Mobile phase: ${result.method?.mobilePhase || "N/A"}
+Flow rate: ${result.method?.flowRate || "N/A"}
+Detection: ${result.method?.detection || "N/A"}
+Runtime: ${result.method?.runtime || "N/A"}`}
+                </pre>
+              </div>
 
-            <div className="result-card">
-              <h3>Physicochemical snapshot (demo)</h3>
-              <dl>
-                <div>
-                  <dt>logP (approx.)</dt>
-                  <dd>{result.properties.logP}</dd>
-                </div>
-                <div>
-                  <dt>pKa (representative)</dt>
-                  <dd>{result.properties.pKa}</dd>
-                </div>
-                <div>
-                  <dt>Solubility (qualitative)</dt>
-                  <dd>{result.properties.solubility}</dd>
-                </div>
-              </dl>
-              <p className="small-muted">
-                These are illustrative demo values only and must not be used for
-                regulatory submissions or real‑world decisions.
-              </p>
+              {/* Card 3: Literature / WAC / QbD notes */}
+              <div className="result-card">
+                <h3>Literature & QbD notes</h3>
+                <p className="small-muted">
+                  Relevant articles, prior methods and risk‑based considerations.
+                </p>
+                <pre className="result-pre">
+                  {result.literatureSummary ||
+                    result.qbdNotes ||
+                    "Demo: literature / QbD notes will appear here based on the AI output."}
+                </pre>
+              </div>
+            </div>
+          </section>
+
+          {/* Certificate + payment + PDF button */}
+          <section style={{ marginTop: "1.5rem" }}>
+            <div className="certificate-card">
+              <label
+                className="small-muted"
+                style={{ display: "block", marginBottom: "0.5rem" }}
+              >
+                <input
+                  type="checkbox"
+                  checked={paymentConfirmed}
+                  onChange={(e) => setPaymentConfirmed(e.target.checked)}
+                  style={{ marginRight: "0.5rem" }}
+                />
+                I confirm that demo payment has been made.
+              </label>
+
+              <button
+                type="button"
+                onClick={handleDownloadPdf}
+                className="primary-button"
+                disabled={!paymentConfirmed || !certificate || isPdfGenerating}
+              >
+                {isPdfGenerating
+                  ? "Preparing PDF..."
+                  : "Download Method as PDF (demo)"}
+              </button>
             </div>
           </section>
         </>
       )}
+
       <p className="text-xs text-slate-500 text-center mt-8">
         Backend status: {backendStatus}
-        {plan === "free" && (
-          <div style={{ marginTop: 8, marginBottom: 16, padding: 8, border: "1px solid #facc15", background: "#fefce8", color: "#854d0e", fontSize: 14 }}>
-            LCForge Free Demo: limited AI runs and basic templates. Pro version with advanced QbD reports & higher limits coming soon.
-          </div>
-        )}
       </p>
     </div>
   );

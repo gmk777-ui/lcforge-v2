@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { generateMethodPdf } from "../utils/pdfGenerator";
+import { getUsedMethods, incrementUsedMethods } from "../utils/freeLimit";
 
 function buildExampleResult(drug: string) {
   const name = drug || "Drug";
@@ -88,20 +88,65 @@ function Home() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [freeLimit, setFreeLimit] = useState<number>(3);
+  const [used, setUsed] = useState<number>(0);
+  const [limitReached, setLimitReached] = useState<boolean>(false);
+  const [limitMessage, setLimitMessage] = useState<string>("");
   useEffect(() => {
+    // Check backend health
     fetch(`${backendUrl}/health`)
       .then((res) => res.json())
       .then((health) => {
-        setBackendStatus(`${health.status} - ${health.message}`);
+        // health is structured: { status, mode, result, meta }
+        const msg =
+          health && health.result && health.result.message
+            ? health.result.message
+            : "LCForge backend is running";
+        setBackendStatus(`${health.status} - ${msg}`);
+
+        // If backend sends freeLimit in meta, use that
+        if (health.meta && typeof health.meta.freeLimit === "number") {
+          setFreeLimit(health.meta.freeLimit);
+        }
+
+        // Initialize used from localStorage whenever freeLimit might change
+        const count = getUsedMethods();
+        setUsed(count);
+        if (count >= (health.meta?.freeLimit ?? freeLimit)) {
+          setLimitReached(true);
+          setLimitMessage(
+            `You’ve reached your free limit of ${health.meta?.freeLimit ?? freeLimit
+            } methods this month. Please subscribe to continue.`
+          );
+        }
       })
       .catch((err) => {
         console.error(err);
         setBackendStatus("Error connecting to backend");
+
+        // Initialize used from localStorage even if health fails
+        const count = getUsedMethods();
+        setUsed(count);
+        if (count >= freeLimit) {
+          setLimitReached(true);
+          setLimitMessage(
+            `You’ve reached your free limit of ${freeLimit} methods this month. Please subscribe to continue.`
+          );
+        }
       });
-  }, [backendUrl]);
+  }, [backendUrl, freeLimit]);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
+
+    // 1) Enforce limit before calling backend
+    if (used >= freeLimit) {
+      setLimitReached(true);
+      setLimitMessage(
+        `You’ve reached your free limit of ${freeLimit} methods this month. Please subscribe to continue.`
+      );
+      return;
+    }
 
     setIsLoading(true);
     setErrorMessage(null);
@@ -125,12 +170,19 @@ function Home() {
 
       const data = await response.json();
 
-      // Update plan from backend meta
+      // 2) Update freeLimit from backend meta if present
+      let effectiveFreeLimit = freeLimit;
+      if (data && data.meta && typeof data.meta.freeLimit === "number") {
+        setFreeLimit(data.meta.freeLimit);
+        effectiveFreeLimit = data.meta.freeLimit;
+      }
+
+      // 3) Update plan from backend meta (your existing logic)
       if (data && data.meta && data.meta.plan) {
         setPlan(data.meta.plan);
       }
 
-      // Store the method result (adjust if your shape is different)
+      // 4) Store the method result (existing logic)
       if (data.result) {
         setResult(data.result);
 
@@ -150,18 +202,20 @@ function Home() {
         });
       }
 
-      // Update generate status based on mode
-      if (data.mode === "ai_live") {
-        setGenerateStatus("AI‑generated LC method.");
-      } else if (data.mode === "demo_fallback") {
-        setGenerateStatus("Fallback template method (AI temporarily unavailable).");
-      }
+      // 5) Increment local usage after a successful generation
+      const next = incrementUsedMethods();
+      setUsed(next);
 
-      setBackendStatus("Backend is reachable and responding.");
-    } catch (error: any) {
-      console.error("Error contacting LCForge backend:", error);
-      setGenerateStatus("Error contacting LCForge backend. Please try again.");
-      setBackendStatus("Error connecting to backend");
+      if (next >= (data.meta?.freeLimit ?? freeLimit)) {
+        setLimitReached(true);
+        setLimitMessage(
+          `You’ve reached your free limit of ${data.meta?.freeLimit ?? freeLimit
+          } methods this month. Please subscribe to continue.`
+        );
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || "Error generating method");
     } finally {
       setIsLoading(false);
     }
@@ -324,10 +378,21 @@ function Home() {
                     </div>
                   </div>
 
+                  {/* Free usage info */}
+                  <p className="small-muted" style={{ marginTop: "0.5rem" }}>
+                    Free methods used: {used}/{freeLimit}
+                  </p>
+
+                  {limitReached && (
+                    <p style={{ color: "red", marginTop: "4px", fontWeight: 500 }}>
+                      {limitMessage}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
                     className="primary-button"
-                    disabled={isLoading}
+                    disabled={isLoading || limitReached}
                   >
                     {isLoading ? "Generating..." : "Generate AI method"}
                   </button>

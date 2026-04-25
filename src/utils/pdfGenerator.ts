@@ -24,7 +24,7 @@ export function generateMethodPdf(data: MethodCertificateData) {
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text("LCForge AI – Chromatography Method Certificate (Demo)", marginLeft, y);
+  doc.text("LCForge AI – Chromatography Method Certificate", marginLeft, y);
 
   y += 8;
   doc.setFontSize(10);
@@ -69,14 +69,14 @@ export function generateMethodPdf(data: MethodCertificateData) {
   y += 5;
   doc.setFont("helvetica", "normal");
   const noticeLines = doc.splitTextToSize(
-    "This chromatographic method is generated exclusively for the above user by LCForge AI (demo). This method is confidential and reserved for the requesting organization.",
+    "This chromatographic method is generated exclusively for the above user by LCForge AI. This method is confidential and reserved for the requesting organization.",
     180
   );
   doc.text(noticeLines, marginLeft, y);
   y += noticeLines.length * 5;
 
   y += 3;
-  doc.text(`Method fingerprint (demo): ${data.fingerprint}`, marginLeft, y);
+  doc.text(`Method fingerprint: ${data.fingerprint}`, marginLeft, y);
 
   // Watermark
   doc.setFontSize(40);

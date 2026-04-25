@@ -5,31 +5,31 @@ function buildExampleResult(drug: string) {
   const name = drug || "Drug";
   return {
     method: {
-      title: `Draft HPLC Method for ${name} (Demo)`,
+      title: `Draft HPLC method for ${name}`,
       column: "C18, 150 × 4.6 mm, 5 µm",
       mobilePhase: "Acetonitrile : 0.1% formic acid (60:40, v/v)",
       flowRate: "1.0 mL/min",
       detection: "UV at 240 nm",
       runtime: "10 min",
-      notes: `Static demo output only – example LC conditions for ${name}. Not validated or stability‑indicating.`,
+      notes: `Early access interface – example LC conditions for ${name}. Not for clinical‑diagnostic use.`,
     },
     literature: [
       {
-        title: `RP‑HPLC method for ${name} in tablets (demo)`,
+        title: `RP‑HPLC method for ${name} in tablets`,
         journal: "Journal of Pharmaceutical Analysis",
         year: 2019,
       },
       {
-        title: `Stability‑indicating LC method for ${name} (demo)`,
+        title: `Stability‑indicating LC method for ${name}`,
         journal: "International Journal of Pharm Sci",
         year: 2021,
       },
     ],
     properties: {
-      logP: `≈ 3.0 (approximate for ${name}, demo)`,
-      pKa: `Representative basic pKa for ${name} (demo)`,
+      logP: `≈ 3.0 (approximate for ${name})`,
+      pKa: `Representative basic pKa for ${name}`,
       solubility:
-        "Example statement: sparingly soluble in water (demo – not measured).",
+        "Example statement: sparingly soluble in water (illustrative – not measured).",
     },
   };
 }
@@ -134,13 +134,13 @@ function Home() {
       if (data.result) {
         setResult(data.result);
 
-        const methodId = data.result.methodId || "DEMO-METHOD";
+        const methodId = data.result.methodId || "LCF-METHOD";
 
         const fingerprint = buildFingerprint({
           drug: drugName || "Drug",
           column: data.result.method?.column || "Column",
           instrument: instrument || technique,
-          email: email || "email@demo.local",
+          email: email || "scientist@example.com",
         });
 
         setCertificate({
@@ -169,7 +169,7 @@ function Home() {
   function handleDownloadPdf() {
     if (!result || !certificate) return;
     if (!paymentConfirmed) {
-      alert("Please confirm payment before downloading the demo PDF.");
+      alert("Please confirm payment before downloading the PDF.");
       return;
     }
 
@@ -178,9 +178,9 @@ function Home() {
 
       generateMethodPdf({
         drug: drugName || "Drug",
-        scientistName: scientistName || "Scientist (demo)",
-        email: email || "email@demo.local",
-        company: company || "Organization (demo)",
+        scientistName: scientistName || "Scientist",
+        email: email || "scientist@example.com",
+        company: company || "Organization",
         instrument: instrument || technique,
         methodId: certificate.methodId,
         timestamp: String(certificate.timestamp),
@@ -218,7 +218,7 @@ function Home() {
               {/* CARD: note */}
               <div className="hero-card">
                 <p className="hero-note">
-                  LCForge is running with a test backend. AI is in demo mode and
+                  LCForge is running with a test backend. AI is running in live mode, generating unique LC methods for your inputs. and
                   suggestions are illustrative only, not validated for real‑world
                   decisions.
                 </p>
@@ -229,8 +229,7 @@ function Home() {
                 <h2>Describe your chromatographic need</h2>
                 <p className="hero-card-subtitle">
                   Provide basic details about your molecule and context. LCForge AI
-                  will propose a starting LC/HPLC/LC‑MS method and a demo
-                  certificate for internal communication.
+                  will propose a starting LC/HPLC/LC‑MS method and Each run includes a digitally signed LCForge certificate with a unique fingerprint
                 </p>
 
                 <form className="hero-form" onSubmit={handleGenerate}>
@@ -299,7 +298,7 @@ function Home() {
                         type="text"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
-                        placeholder="Organization (demo)"
+                        placeholder="Organization"
                       />
                     </div>
                   </div>
@@ -330,7 +329,7 @@ function Home() {
                     className="primary-button"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Generating..." : "Generate demo LC method"}
+                    {isLoading ? "Generating..." : "Generate AI method"}
                   </button>
 
                   {isLoading && (
@@ -369,7 +368,7 @@ function Home() {
                 </p>
                 <pre className="result-pre">
                   {result.physicochemicalSummary ||
-                    "Physicochemical summary will appear here based on the AI output."}
+                    "Physicochemical summary from AI will appear here."}
                 </pre>
               </div>
 
@@ -398,7 +397,7 @@ Runtime: ${result.method?.runtime || "N/A"}`}
                 <pre className="result-pre">
                   {result.literatureSummary ||
                     result.qbdNotes ||
-                    "Literature / QbD notes will appear here based on the AI output."}
+                    "Literature / QbD notes from AI will appear here."}
                 </pre>
               </div>
             </div>

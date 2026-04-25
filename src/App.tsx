@@ -16,7 +16,7 @@ export default function App() {
           <div className="sidebar-logo-circle">LC</div>
           <div className="sidebar-title-block">
             <div className="sidebar-title">LCForge AI</div>
-            <div className="sidebar-subtitle">Chromatography Studio (Demo)</div>
+            <div className="sidebar-subtitle">Chromatography Studio</div>
           </div>
         </div>
 
@@ -55,10 +55,10 @@ export default function App() {
 
         <div className="sidebar-footer">
           <div className="sidebar-badge">
-            Demo only · Not for clinical use
+            Decision-support only · Not a substitute for validation
           </div>
           <div className="sidebar-footer-text">
-            Built for analytical scientists to **prototype** LC methods faster.
+            Built for analytical scientists to design and refine LC methods faster.
           </div>
           <div className="sidebar-footer-mini">
             v0.2 · Fingerprinted methods · PDF export
@@ -66,7 +66,7 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Right main area: your old layout inside */}
+      {/* Right main area */}
       <div className="app-main">
         <div className="app-root">
           <header className="navbar">
@@ -75,7 +75,7 @@ export default function App() {
               <div>
                 <div className="logo-text">LCForge AI</div>
                 <div className="logo-tagline">
-                  Forge Robust Chromatography with AI
+                  Forge robust chromatography with AI
                 </div>
               </div>
             </div>
@@ -106,8 +106,9 @@ export default function App() {
 
           <footer className="footer">
             <p>
-              LCForge AI – Demo interface only. No real backend or payments are
-              connected.
+              LCForge AI supports chromatographic method design and optimization.
+              Generated methods are for research and development and require
+              laboratory validation before routine or clinical use.
             </p>
           </footer>
         </div>

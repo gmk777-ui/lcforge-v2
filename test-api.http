@@ -1,4 +1,8 @@
-### Paracetamol AI test
+### Health
+GET http://localhost:5000/health
+
+
+### Generate (demo fallback or ai_live)
 POST http://localhost:5000/api/generate
 Content-Type: application/json
 
@@ -6,8 +10,14 @@ Content-Type: application/json
   "drugName": "Paracetamol",
   "sampleType": "Tablet",
   "technique": "HPLC",
-  "constraints": ""
+  "constraints": "Use water:ACN, runtime < 10 min"
 }
 
-### Health check
-GET http://localhost:5000/health
+
+### Stripe checkout session
+POST http://localhost:5000/api/create-checkout-session
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}

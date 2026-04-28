@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUsedMethods, incrementUsedMethods } from "../utils/freeLimit";
+import { generateMethodPdf } from "../utils/pdfGenerator";
 
 function buildExampleResult(drug: string) {
   const name = drug || "Drug";
@@ -222,29 +223,33 @@ function Home() {
   }
   function handleDownloadPdf() {
     if (!result || !certificate) return;
+
     if (!paymentConfirmed) {
       alert("Please confirm payment before downloading the PDF.");
       return;
     }
 
-    try {
-      setIsPdfGenerating(true);
+    setIsPdfGenerating(true);
 
+    try {
       generateMethodPdf({
         drug: drugName || "Drug",
         scientistName: scientistName || "Scientist",
-        email: email || "scientist@example.com",
-        company: company || "Organization",
-        instrument: instrument || technique,
+        email: email || "email@example.com",
+        company: company || "Company",
+        instrument: instrument || "Instrument",
         methodId: certificate.methodId,
         timestamp: String(certificate.timestamp),
         fingerprint: certificate.fingerprint,
-        column: result.method.column,
-        mobilePhase: result.method.mobilePhase,
-        flowRate: result.method.flowRate,
-        detection: result.method.detection,
-        runtime: result.method.runtime,
+        column: result.method?.column || "",
+        mobilePhase: result.method?.mobilePhase || "",
+        flowRate: result.method?.flowRate || "",
+        detection: result.method?.detection || "",
+        runtime: result.method?.runtime || "",
       });
+    } catch (err) {
+      console.error("PDF generation error", err);
+      // Optionally: set a UI message state here.
     } finally {
       setIsPdfGenerating(false);
     }
@@ -283,7 +288,7 @@ function Home() {
                 <h2>Describe your chromatographic need</h2>
                 <p className="hero-card-subtitle">
                   Provide basic details about your molecule and context. LCForge AI
-                  will propose a starting LC/HPLC/LC‑MS method and Each run includes a digitally signed LCForge certificate with a unique fingerprint
+                  function handleDownloadPdf will propose a starting LC/HPLC/LC‑MS method and Each run includes a digitally signed LCForge certificate with a unique fingerprint
                 </p>
 
                 <form className="hero-form" onSubmit={handleGenerate}>

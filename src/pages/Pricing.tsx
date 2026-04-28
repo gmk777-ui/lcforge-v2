@@ -1,5 +1,5 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { createSoloCheckoutSession } from "../api";
 const backendUrl =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
@@ -9,45 +9,47 @@ export default function PricingPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [checkoutStatus, setCheckoutStatus] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkoutParam = params.get("checkout");
 
-  async function handleUpgradeToSolo() {
+    if (checkoutParam === "success") {
+      setCheckoutStatus(
+        "Solo subscription is active in Stripe test mode. Thank you!"
+      );
+    } else if (checkoutParam === "cancel") {
+      setCheckoutStatus(
+        "Checkout cancelled. You can restart anytime from this page."
+      );
+    }
+  }, []);
+  async function handleSoloCheckout() {
     try {
-      setLoading(true);
-      setMessage(null);
-
-      const email = window.prompt("Enter your work email for billing:") || "";
+      setCheckoutStatus(null);
+      setIsCheckingOut(true);
 
       if (!email) {
-        setMessage("Email is required to start the subscription.");
-        setLoading(false);
-        return;
-      }
-
-      const res = await fetch(`${backendUrl}/api/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!res.ok) {
-        setMessage("Unable to start checkout. Please try again.");
-        setLoading(false);
-        return;
-      }
-
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setMessage(
-          data.error || "Unexpected response from payment service."
+        setCheckoutStatus(
+          "Please enter your email to start the Solo subscription (test mode)."
         );
-        setLoading(false);
+        setIsCheckingOut(false);
+        return;
       }
-    } catch (err) {
-      console.error("Upgrade error", err);
-      setMessage("Something went wrong. Please try again.");
-      setLoading(false);
+
+      const session = await createSoloCheckoutSession(email);
+
+      // Redirect to Stripe Checkout
+      window.location.href = session.url;
+    } catch (err: any) {
+      console.error(err);
+      setCheckoutStatus(
+        "There was a problem starting the checkout. Please try again."
+      );
+    } finally {
+      setIsCheckingOut(false);
     }
   }
 
@@ -86,13 +88,27 @@ export default function PricingPage() {
             <li>Priority processing and email support</li>
             <li>Ideal for individual scientists and consultants</li>
           </ul>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="pricing-email-input"
+          />
+
           <button
+            onClick={handleSoloCheckout}
             className="primary-button"
-            onClick={handleUpgradeToSolo}
-            disabled={loading}
+            disabled={isCheckingOut}
           >
-            {loading ? "Redirecting to checkout..." : "Upgrade to Solo"}
+            {isCheckingOut ? "Redirecting to Stripe..." : "Start Solo (Stripe test)"}
           </button>
+
+          {checkoutStatus && (
+            <p className="small-muted" style={{ marginTop: "0.5rem" }}>
+              {checkoutStatus}
+            </p>
+          )}
         </div>
 
         {/* Future higher-tier plan placeholder */}

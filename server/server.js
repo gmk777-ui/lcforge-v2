@@ -10,6 +10,11 @@ import Stripe from "stripe";
 import { config } from "./config.js";
 import { ok, fail } from "./responseHelpers.js";
 
+console.log("CONFIG Stripe:", {
+  secretFromConfig: config.stripeSecretKey ? "set" : "empty",
+  priceFromConfig: config.stripePriceIdSolo,
+});
+
 console.log("Stripe key present:", !!process.env.STRIPE_SECRET_KEY);
 console.log("Solo price id:", process.env.STRIPE_SOLO_PRICE_ID);
 console.log("OpenAI key present:", !!process.env.OPENAI_API_KEY);
@@ -183,22 +188,34 @@ app.post("/api/create-checkout-session", async (req, res) => {
     if (!email) {
       return fail(res, "Email is required", { code: "NO_EMAIL" }, 400);
     }
+    const stripeSecret = process.env.STRIPE_SECRET_KEY || "";
+    const soloPriceId = process.env.STRIPE_SOLO_PRICE_ID || "";
+    const frontendUrl = process.env.FRONTEND_URL || config.frontendUrl;
 
-    if (!stripe || !config.stripeSecretKey || !config.stripePriceIdSolo) {
+    console.log("DEBUG Stripe runtime:", {
+      secret: stripeSecret ? "set" : "empty",
+      soloPrice: soloPriceId,
+    });
+
+    if (!stripeSecret || !soloPriceId) {
       return fail(res, "Stripe is not configured", { code: "NO_STRIPE" }, 500);
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const stripeClient = new Stripe(stripeSecret, {
+      apiVersion: "2022-11-15",
+    });
+
+    const session = await stripeClient.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
       line_items: [
         {
-          price: config.stripePriceIdSolo,
+          price: soloPriceId,
           quantity: 1,
         },
       ],
-      success_url: `${config.frontendUrl}/?checkout=success`,
-      cancel_url: `${config.frontendUrl}/pricing?checkout=cancel`,
+      success_url: `${frontendUrl}/pricing?checkout=success`,
+      cancel_url: `${frontendUrl}/pricing?checkout=cancel`,
     });
 
     return ok(

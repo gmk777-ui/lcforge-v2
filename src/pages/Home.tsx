@@ -116,8 +116,7 @@ function Home() {
         if (count >= (health.meta?.freeLimit ?? freeLimit)) {
           setLimitReached(true);
           setLimitMessage(
-            `You’ve reached your free limit of ${health.meta?.freeLimit ?? freeLimit
-            } methods this month. Please subscribe to continue.`
+            `You’ve reached your free limit of ${health.meta?.freeLimit ?? freeLimit} methods this month. Please contact us for extended access.`
           );
         }
       })
@@ -277,9 +276,7 @@ function Home() {
               {/* CARD: note */}
               <div className="hero-card">
                 <p className="hero-note">
-                  LCForge is running with a test backend. AI is running in live mode, generating unique LC methods for your inputs. and
-                  suggestions are illustrative only, not validated for real‑world
-                  decisions.
+                  LCForge is an AI‑assisted LC method design tool intended for research and educational use. Outputs are starting points that must be reviewed, refined and validated in your own lab; they are not diagnostic or clinical recommendations.
                 </p>
               </div>
 
@@ -287,8 +284,7 @@ function Home() {
               <div className="hero-card">
                 <h2>Describe your chromatographic need</h2>
                 <p className="hero-card-subtitle">
-                  Provide basic details about your molecule and context. LCForge AI
-                  function handleDownloadPdf will propose a starting LC/HPLC/LC‑MS method and Each run includes a digitally signed LCForge certificate with a unique fingerprint
+                  Provide basic details about your molecule and context. LCForge AI proposes a starting LC/HPLC/LC‑MS method, and each run includes a digitally signed LCForge certificate with a unique fingerprint for your records.
                 </p>
 
                 <form className="hero-form" onSubmit={handleGenerate}>
@@ -364,12 +360,12 @@ function Home() {
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Work email (demo)</label>
+                      <label>Work email</label>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="email@demo.local"
+                        placeholder="name@lab-or-company.com"
                       />
                     </div>
                     <div className="form-group">
@@ -385,7 +381,7 @@ function Home() {
 
                   {/* Free usage info */}
                   <p className="small-muted" style={{ marginTop: "0.5rem" }}>
-                    Free methods used: {used}/{freeLimit}
+                    Trial uses this month: {used}/{freeLimit}
                   </p>
 
                   {limitReached && (
@@ -434,7 +430,7 @@ function Home() {
               <div className="result-card">
                 <h3>Physico‑chemical summary</h3>
                 <p className="small-muted">
-                  Key information about the molecule and matrix.
+                  Key AI‑generated notes about the molecule, matrix and chromatographic behavior.
                 </p>
                 <pre className="result-pre">
                   {result.physicochemicalSummary ||
@@ -446,7 +442,7 @@ function Home() {
               <div className="result-card">
                 <h3>Suggested LC method</h3>
                 <p className="small-muted">
-                  Column, mobile phase, flow rate, detection and runtime.
+                  AI‑proposed column, mobile phase, flow, detection and runtime as a starting point for your lab optimization.
                 </p>
                 <pre className="result-pre">
                   {result.methodSummary ||
@@ -462,7 +458,7 @@ Runtime: ${result.method?.runtime || "N/A"}`}
               <div className="result-card">
                 <h3>Literature & QbD notes</h3>
                 <p className="small-muted">
-                  Relevant articles, prior methods and risk‑based considerations.
+                  Relevant literature hints, prior method patterns and risk‑based QbD/WAC considerations for further method development.
                 </p>
                 <pre className="result-pre">
                   {result.literatureSummary ||

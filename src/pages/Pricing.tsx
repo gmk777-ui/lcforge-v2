@@ -18,11 +18,11 @@ export default function PricingPage() {
 
     if (checkoutParam === "success") {
       setCheckoutStatus(
-        "Solo subscription is active in Stripe test mode. Thank you!"
+        "Solo subscription flow completed in Stripe test mode. No real payment was taken."
       );
     } else if (checkoutParam === "cancel") {
       setCheckoutStatus(
-        "Checkout cancelled. You can restart anytime from this page."
+        "Checkout was cancelled. You can restart anytime from this page."
       );
     }
   }, []);
@@ -33,7 +33,7 @@ export default function PricingPage() {
 
       if (!email) {
         setCheckoutStatus(
-          "Please enter your email to start the Solo subscription (test mode)."
+          "Please enter your email to start the Solo subscription in Stripe test mode."
         );
         setIsCheckingOut(false);
         return;
@@ -46,7 +46,7 @@ export default function PricingPage() {
     } catch (err: any) {
       console.error(err);
       setCheckoutStatus(
-        "There was a problem starting the checkout. Please try again."
+        "We couldn’t start the checkout session. Please try again in a moment."
       );
     } finally {
       setIsCheckingOut(false);
@@ -57,22 +57,21 @@ export default function PricingPage() {
     <section className="pricing">
       <h1>Pricing & Plans</h1>
       <p className="pricing-intro">
-        Choose a plan that fits your lab. Start free, upgrade when LCForge AI
-        becomes part of your daily workflow.
+        Start with free AI‑assisted LC method generation, then move to a subscription when LCForge becomes part of your routine method development and documentation.
       </p>
 
       <div className="pricing-grid">
         {/* Free plan */}
         <div className="pricing-card">
-          <h2>LCForge Free</h2>
+          <h2>Free trial usage</h2>
           <p className="price">$0</p>
           <ul>
             <li>Up to 3 AI‑generated LC/HPLC/LC‑MS methods per month</li>
-            <li>Full method view and PDF certificates</li>
-            <li>No card required</li>
-            <li>Best for evaluating LCForge AI</li>
+            <li>Full method view and method PDF certificates with fingerprints</li>
+            <li>No card required during the free trial</li>
+            <li>Best for evaluating LCForge in real method‑development scenarios</li>
           </ul>
-          <button className="outline-button">Start free</button>
+          <button className="outline-button">Use free trial methods</button>
         </div>
 
         {/* Solo subscription plan */}
@@ -83,16 +82,16 @@ export default function PricingPage() {
           </p>
           <p className="price-note">Approx. ₹4,000 per month (for reference)</p>
           <ul>
-            <li>Up to 200 AI‑generated methods per month</li>
-            <li>Unlimited PDF certificates with fingerprints</li>
+            <li>Up to 200 AI‑generated LC/HPLC/LC‑MS methods per month</li>
+            <li>Unlimited method PDF certificates with unique LCForge fingerprints</li>
             <li>Priority processing and email support</li>
-            <li>Ideal for individual scientists and consultants</li>
+            <li>Ideal for individual analytical scientists and consultants</li>
           </ul>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder="name@lab-or-company.com"
             className="pricing-email-input"
           />
 
@@ -101,7 +100,7 @@ export default function PricingPage() {
             className="primary-button"
             disabled={isCheckingOut}
           >
-            {isCheckingOut ? "Redirecting to Stripe..." : "Start Solo (Stripe test)"}
+            {isCheckingOut ? "Redirecting to Stripe..." : "Start Solo (Stripe test mode)"}
           </button>
 
           {checkoutStatus && (
@@ -117,11 +116,11 @@ export default function PricingPage() {
           <p className="price">
             $149<span>/ month</span>
           </p>
-          <p className="price-note">For small pharma and CRO teams</p>
+          <p className="price-note">Designed for small pharma and CRO teams</p>
           <ul>
-            <li>Higher method limits for teams</li>
-            <li>Shared workspace for your lab</li>
-            <li>Priority onboarding and support</li>
+            <li>Higher AI method limits for multi‑scientist teams</li>
+            <li>Shared workspace and method history for your lab</li>
+            <li>Priority onboarding, support and feature input</li>
           </ul>
           <button className="outline-button" disabled>
             Coming soon
@@ -129,20 +128,20 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {message && (
-        <p
-          className="small-muted pricing-footer-note"
-          style={{ color: "#f97373" }}
-        >
-          {message}
-        </p>
-      )}
+      {
+        message && (
+          <p
+            className="small-muted pricing-footer-note"
+            style={{ color: "#f97373" }}
+          >
+            {message}
+          </p>
+        )
+      }
 
       <p className="small-muted pricing-footer-note">
-        Payments are processed by a PCI‑compliant provider (e.g., Stripe).
-        LCForge AI never stores full card details. All prices are indicative
-        and may be adjusted for regional taxes and currency.
+        Payments are processed by a PCI‑compliant provider (Stripe). LCForge AI never stores full card details. During this early phase, all checkouts run in Stripe test mode and do not create real charges; prices shown are indicative and may be adjusted for regional taxes and currency.
       </p>
-    </section>
+    </section >
   );
 }

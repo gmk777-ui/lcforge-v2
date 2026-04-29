@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "./server/.env" });
-console.log("Using .env from:", process.cwd() + "/server/.env");
+dotenv.config({ path: "./.env" });
+console.log("Using .env from:", process.cwd() + "/.env");
 
 import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import Stripe from "stripe";
+import rateLimit from "express-rate-limit";
 
 import { config } from "./config.js";
 import { ok, fail } from "./responseHelpers.js";
@@ -18,6 +19,24 @@ console.log("CONFIG Stripe:", {
 console.log("Stripe key present:", !!process.env.STRIPE_SECRET_KEY);
 console.log("Solo price id:", process.env.STRIPE_SOLO_PRICE_ID);
 console.log("OpenAI key present:", !!process.env.OPENAI_API_KEY);
+
+// Optional: helper for future timeout wrapping (not used yet)
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`OpenAI request timed out after ${ms}ms`));
+    }, ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
 
 // Stripe client (optional if no key)
 const stripe =
@@ -36,7 +55,25 @@ const openai =
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// CORS: allow lcforgeai.online and local dev
+const allowedOrigins = [
+  "https://lcforgeai.online",
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Allow non-browser tools like curl/Postman (no Origin header)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+  })
+);
+
 app.use(express.json());
 
 // Health route
@@ -53,7 +90,23 @@ app.get("/health", (req, res) => {
   );
 });
 
-app.post("/api/generate", async (req, res) => {
+// Conservative rate limit for method generation
+const generateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 generate calls per IP per 15 minutes (adjust later)
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "error",
+    result: null,
+    meta: {
+      error:
+        "API rate limit exceeded for method generation. Please try again later.",
+    },
+  },
+});
+
+app.post("/api/generate", generateLimiter, async (req, res) => {
   const {
     drugName = "Drug",
     sampleType = "API",
@@ -163,19 +216,18 @@ app.post("/api/generate", async (req, res) => {
     // All other errors fall through with default mode
   }
 
-  const result = aiResult || fallbackResult;
+  // Decide which result to send back
+  const finalResult = aiResult || fallbackResult;
 
   return ok(
     res,
-    result,
     {
-      drugName,
-      sampleType,
-      technique,
-      backendVersion: "0.3-ai-live",
-      plan: "free",
-      freeLimit: config.freeLimitPerMonth,
-      tokens: completion?.usage || null,
+      ...finalResult,
+      methodId: `LCF-${Date.now()}`,
+    },
+    {
+      mode,
+      freeLimit: config.freeLimit || 3,
     }
   );
 });

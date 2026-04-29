@@ -182,15 +182,42 @@ function Home() {
         setPlan(data.meta.plan);
       }
 
-      // 4) Store the method result (existing logic)
+      // 4) Store the method result (normalize keys for UI/PDF)
       if (data.result) {
-        setResult(data.result);
+        const raw = data.result;
 
-        const methodId = data.result.methodId || "LCF-METHOD";
+        // Normalize method field names and detection for the frontend
+        const normalizedMethod = raw.method
+          ? {
+            ...raw.method,
+            // Map snake_case keys to camelCase expected by UI
+            mobilePhase:
+              raw.method.mobilePhase || raw.method.mobile_phase || "",
+            flowRate: raw.method.flowRate || raw.method.flow_rate || "",
+            runtime: raw.method.runtime || raw.method.run_time || "",
+            // Flatten detection object if present
+            detection:
+              typeof raw.method.detection === "string"
+                ? raw.method.detection
+                : raw.method.detection
+                  ? `${raw.method.detection.type || ""} ${raw.method.detection.wavelength
+                    ? `at ${raw.method.detection.wavelength}`
+                    : ""
+                    }`.trim()
+                  : "",
+          }
+          : null;
+
+        setResult({
+          ...raw,
+          method: normalizedMethod || raw.method || null,
+        } as ExampleResult);
+
+        const methodId = raw.methodId || "LCF-METHOD";
 
         const fingerprint = buildFingerprint({
           drug: drugName || "Drug",
-          column: data.result.method?.column || "Column",
+          column: (normalizedMethod || raw.method)?.column || "Column",
           instrument: instrument || technique,
           email: email || "scientist@example.com",
         });

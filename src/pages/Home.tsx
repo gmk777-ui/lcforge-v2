@@ -186,24 +186,86 @@ function Home() {
       if (data.result) {
         const raw = data.result;
 
-        // Normalize method field names and detection for the frontend
+        // Normalize method field names, flatten nested objects, and add sensible defaults
         const normalizedMethod = raw.method
           ? {
             ...raw.method,
-            // Map snake_case keys to camelCase expected by UI
-            mobilePhase:
-              raw.method.mobilePhase || raw.method.mobile_phase || "",
+
+            // Flatten column object if present
+            column:
+              typeof raw.method.column === "string"
+                ? raw.method.column
+                : raw.method.column
+                  ? [
+                    raw.method.column.type,
+                    raw.method.column.dimensions,
+                    raw.method.column.particle_size,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")
+                  : "",
+
+            // Mobile phase summary and gradient
+            mobilePhase: (() => {
+              // If model already gave a plain string, use it
+              if (typeof raw.method.mobilePhase === "string") {
+                return raw.method.mobilePhase;
+              }
+
+              const mp = raw.method.mobile_phase;
+              if (!mp || typeof mp !== "object") {
+                return "";
+              }
+
+              const solventA = mp.solvent_A || "";
+              const solventB = mp.solvent_B || "";
+              const ratio = mp.ratio || ""; // optional if model ever returns it
+              const gradient = mp.gradient || "";
+
+              // First line: simple solvent summary, optionally with ratio
+              const base =
+                ratio && solventA && solventB
+                  ? `${solventA} / ${solventB} (${ratio})`
+                  : solventA && solventB
+                    ? `${solventA} / ${solventB}`
+                    : solventA || solventB || "";
+
+              // If gradient text exists, append it
+              if (gradient) {
+                return `${base} (${gradient})`;
+              }
+              return base;
+            })(),
+
             flowRate: raw.method.flowRate || raw.method.flow_rate || "",
+
             runtime: raw.method.runtime || raw.method.run_time || "",
+
+            // Temperature with default 27°C if missing
+            temperature:
+              raw.method.temperature ||
+              raw.method.column_temperature ||
+              "27°C",
+
+            // Injection volume with default 20 µL if missing
+            injectionVolume:
+              raw.method.injectionVolume ||
+              raw.method.injection_volume ||
+              "20 µL",
+
             // Flatten detection object if present
             detection:
               typeof raw.method.detection === "string"
                 ? raw.method.detection
                 : raw.method.detection
-                  ? `${raw.method.detection.type || ""} ${raw.method.detection.wavelength
-                    ? `at ${raw.method.detection.wavelength}`
-                    : ""
-                    }`.trim()
+                  ? [
+                    raw.method.detection.type,
+                    raw.method.detection.wavelength
+                      ? `at ${raw.method.detection.wavelength}`
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")
                   : "",
           }
           : null;
@@ -477,7 +539,12 @@ function Home() {
 Mobile phase: ${result.method?.mobilePhase || "N/A"}
 Flow rate: ${result.method?.flowRate || "N/A"}
 Detection: ${result.method?.detection || "N/A"}
-Runtime: ${result.method?.runtime || "N/A"}`}
+Runtime: ${result.method?.runtime || "N/A"}
+Column temperature: ${result.method?.temperature || "N/A"}
+Injection volume: ${(result.method as any)?.injectionVolume ||
+                    (result.method as any)?.injection_volume ||
+                    "N/A"
+                    }`}
                 </pre>
               </div>
 

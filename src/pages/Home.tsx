@@ -185,7 +185,14 @@ function Home() {
       // 4) Store the method result (normalize keys for UI/PDF)
       if (data.result) {
         const raw = data.result;
-
+        if ((window as any).plausible) {
+          (window as any).plausible("GenerateMethod", {
+            props: {
+              technique,
+              sampleType,
+            },
+          });
+        }
         // Normalize method field names, flatten nested objects, and add sensible defaults
         const normalizedMethod = raw.method
           ? {
@@ -335,6 +342,11 @@ function Home() {
         detection: result.method?.detection || "",
         runtime: result.method?.runtime || "",
       });
+
+      // Track successful PDF generation
+      if ((window as any).plausible) {
+        (window as any).plausible("DownloadPDF");
+      }
     } catch (err) {
       console.error("PDF generation error", err);
       // Optionally: set a UI message state here.
@@ -342,7 +354,6 @@ function Home() {
       setIsPdfGenerating(false);
     }
   }
-
   return (
     <div className="page">
       <div>
@@ -512,7 +523,7 @@ function Home() {
       </div>
       {result && (
         <>
-          {/* 3 result cards */}
+          {/* Result cards */}
           <section style={{ marginTop: "1.5rem" }}>
             <div className="result-grid">
               {/* Card 1: Physico‑chemical summary */}
@@ -548,56 +559,110 @@ Injection volume: ${(result.method as any)?.injectionVolume ||
                 </pre>
               </div>
 
-              {/* Card 3: Literature / WAC / QbD notes */}
+              {/* Card 3: Literature (structured) */}
               <div className="result-card">
-                <h3>Literature & QbD notes</h3>
+                <h3>Related literature</h3>
                 <p className="small-muted">
-                  Relevant literature hints, prior method patterns and risk‑based QbD/WAC considerations for further method development.
+                  AI‑suggested articles and prior methods related to this molecule and technique.
                 </p>
-                <pre className="result-pre">
-                  {result.literatureSummary ||
-                    result.qbdNotes ||
-                    "Literature / QbD notes from AI will appear here."}
-                </pre>
+                {Array.isArray(result.literature) && result.literature.length > 0 ? (
+                  <ul className="result-list">
+                    {result.literature.slice(0, 3).map((ref: any, idx: number) => (
+                      <li key={idx}>
+                        <strong>{ref.title || "Untitled"}</strong>
+                        {ref.journal ? ` — ${ref.journal}` : ""}
+                        {ref.year ? ` (${ref.year})` : ""}
+                        {ref.authors ? ` · ${ref.authors}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="small-muted">
+                    No literature suggestions returned for this query.
+                  </p>
+                )}
               </div>
-            </div>
-          </section>
 
-          {/* Certificate + payment + PDF button */}
-          <section style={{ marginTop: "1.5rem" }}>
-            <div className="certificate-card">
-              <label
-                className="small-muted"
-                style={{ display: "block", marginBottom: "0.5rem" }}
-              >
-                <input
-                  type="checkbox"
-                  checked={paymentConfirmed}
-                  onChange={(e) => setPaymentConfirmed(e.target.checked)}
-                  style={{ marginRight: "0.5rem" }}
-                />
-                I confirm that payment has been made.
-              </label>
-
-              <button
-                type="button"
-                onClick={handleDownloadPdf}
-                className="primary-button"
-                disabled={!paymentConfirmed || !certificate || isPdfGenerating}
-              >
-                {isPdfGenerating
-                  ? "Preparing PDF..."
-                  : "Download Method as PDF"}
-              </button>
+              {/* Card 4: Physicochemical properties (structured) */}
+              <div className="result-card">
+                <h3>Physicochemical properties</h3>
+                <p className="small-muted">
+                  Key AI‑estimated properties for understanding chromatographic behavior.
+                </p>
+                {result.properties ? (
+                  <ul className="result-list">
+                    {(result.properties as any).chemical_name && (
+                      <li>
+                        Chemical name: {(result.properties as any).chemical_name}
+                      </li>
+                    )}
+                    {(result.properties as any).chemical_formula && (
+                      <li>
+                        Formula: {(result.properties as any).chemical_formula}
+                      </li>
+                    )}
+                    {(result.properties as any).molecular_weight && (
+                      <li>
+                        Molecular weight: {(result.properties as any).molecular_weight}
+                      </li>
+                    )}
+                    {(result.properties as any).pKa && (
+                      <li>pKa: {(result.properties as any).pKa}</li>
+                    )}
+                    {(result.properties as any).solubility && (
+                      <li>Solubility: {(result.properties as any).solubility}</li>
+                    )}
+                    {(result.properties as any).stability && (
+                      <li>Stability: {(result.properties as any).stability}</li>
+                    )}
+                  </ul>
+                ) : (
+                  <p className="small-muted">
+                    No properties returned for this query.
+                  </p>
+                )}
+              </div>
             </div>
           </section>
         </>
       )}
 
-      <p className="text-xs text-slate-500 text-center mt-8">
-        Backend status: {backendStatus}
-      </p>
-    </div>
+      {/* Certificate + payment + PDF button */}
+      <section style={{ marginTop: "1.5rem" }}>
+        <div className="certificate-card">
+          <label
+            className="small-muted"
+            style={{ display: "block", marginBottom: "0.5rem" }}
+          >
+            <input
+              type="checkbox"
+              checked={paymentConfirmed}
+              onChange={(e) => setPaymentConfirmed(e.target.checked)}
+              style={{ marginRight: "0.5rem" }}
+            />
+            I confirm that payment has been made.
+          </label>
+
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            className="primary-button"
+            disabled={!paymentConfirmed || !certificate || isPdfGenerating}
+          >
+            {isPdfGenerating
+              ? "Preparing PDF..."
+              : "Download Method as PDF"}
+          </button>
+        </div>
+      </section>
+    </>
+  )
+}
+
+<p className="text-xs text-slate-500 text-center mt-8">
+  Backend status: {backendStatus}
+</p>
+    </div >
   );
 }
 

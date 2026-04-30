@@ -355,314 +355,314 @@ function Home() {
     }
   }
   return (
-    <div className="page">
-      <div>
-        <section className="hero">
-          <div className="hero-grid">
-            <div className="hero-text">
-              <div className="pill">LCForge AI</div>
-              <h1>
-                AI‑assisted LC method design for{" "}
-                <span className="highlight">real‑world pharma labs</span>
-              </h1>
-              <p className="hero-subtitle">
-                LCForge AI helps pharmaceutical scientists design robust HPLC and
-                LC‑MS methods by combining Quality by Design (QbD) principles
-                with White Analytical Chemistry (WAC) and Workflow‑Targeted
-                Chromatography (WTC), starting from your molecule and existing
-                literature and data.
-              </p>
-
-              {/* CARD: note */}
-              <div className="hero-card">
-                <p className="hero-note">
-                  LCForge is an AI‑assisted LC method design tool intended for research and educational use. Outputs are starting points that must be reviewed, refined and validated in your own lab; they are not diagnostic or clinical recommendations.
-                </p>
-              </div>
-
-              {/* CARD: form wrapper */}
-              <div className="hero-card">
-                <h2>Describe your chromatographic need</h2>
-                <p className="hero-card-subtitle">
-                  Provide basic details about your molecule and context. LCForge AI proposes a starting LC/HPLC/LC‑MS method, and each run includes a digitally signed LCForge certificate with a unique fingerprint for your records.
+    <>
+      <div className="page">
+        <div>
+          <section className="hero">
+            <div className="hero-grid">
+              <div className="hero-text">
+                <div className="pill">LCForge AI</div>
+                <h1>
+                  AI‑assisted LC method design for{" "}
+                  <span className="highlight">real‑world pharma labs</span>
+                </h1>
+                <p className="hero-subtitle">
+                  LCForge AI helps pharmaceutical scientists design robust HPLC and
+                  LC‑MS methods by combining Quality by Design (QbD) principles
+                  with White Analytical Chemistry (WAC) and Workflow‑Targeted
+                  Chromatography (WTC), starting from your molecule and existing
+                  literature and data.
                 </p>
 
-                <form className="hero-form" onSubmit={handleGenerate}>
-                  <div className="form-group">
-                    <label>Drug / analyte name</label>
-                    <input
-                      type="text"
-                      value={drugName}
-                      onChange={(e) => setDrugName(e.target.value)}
-                      placeholder="e.g., Atorvastatin, Metformin, custom NCE"
-                      required
-                    />
-                  </div>
+                {/* CARD: note */}
+                <div className="hero-card">
+                  <p className="hero-note">
+                    LCForge is an AI‑assisted LC method design tool intended for research and educational use. Outputs are starting points that must be reviewed, refined and validated in your own lab; they are not diagnostic or clinical recommendations.
+                  </p>
+                </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Sample type</label>
-                      <select
-                        value={sampleType}
-                        onChange={(e) =>
-                          setSampleType(
-                            e.target.value as (typeof sampleTypes)[number]
-                          )
-                        }
-                      >
-                        {sampleTypes.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label>Technique</label>
-                      <select
-                        value={technique}
-                        onChange={(e) =>
-                          setTechnique(
-                            e.target.value as (typeof techniques)[number]
-                          )
-                        }
-                      >
-                        {techniques.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Scientist / analyst</label>
-                      <input
-                        type="text"
-                        value={scientistName}
-                        onChange={(e) => setScientistName(e.target.value)}
-                        placeholder="Your name"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Company / lab</label>
-                      <input
-                        type="text"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        placeholder="Organization"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Work email</label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@lab-or-company.com"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Instrument / platform</label>
-                      <input
-                        type="text"
-                        value={instrument}
-                        onChange={(e) => setInstrument(e.target.value)}
-                        placeholder="e.g., Agilent 1260, Waters UPLC, Sciex LC‑MS"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Free usage info */}
-                  <p className="small-muted" style={{ marginTop: "0.5rem" }}>
-                    Trial uses this month: {used}/{freeLimit}
+                {/* CARD: form wrapper */}
+                <div className="hero-card">
+                  <h2>Describe your chromatographic need</h2>
+                  <p className="hero-card-subtitle">
+                    Provide basic details about your molecule and context. LCForge AI proposes a starting LC/HPLC/LC‑MS method, and each run includes a digitally signed LCForge certificate with a unique fingerprint for your records.
                   </p>
 
-                  {limitReached && (
-                    <p style={{ color: "red", marginTop: "4px", fontWeight: 500 }}>
-                      {limitMessage}
-                    </p>
-                  )}
+                  <form className="hero-form" onSubmit={handleGenerate}>
+                    <div className="form-group">
+                      <label>Drug / analyte name</label>
+                      <input
+                        type="text"
+                        value={drugName}
+                        onChange={(e) => setDrugName(e.target.value)}
+                        placeholder="e.g., Atorvastatin, Metformin, custom NCE"
+                        required
+                      />
+                    </div>
 
-                  <button
-                    type="submit"
-                    className="primary-button"
-                    disabled={isLoading || limitReached}
-                  >
-                    {isLoading ? "Generating..." : "Generate AI method"}
-                  </button>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Sample type</label>
+                        <select
+                          value={sampleType}
+                          onChange={(e) =>
+                            setSampleType(
+                              e.target.value as (typeof sampleTypes)[number]
+                            )
+                          }
+                        >
+                          {sampleTypes.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  {isLoading && (
-                    <p style={{ color: "#555", marginTop: "8px" }}>
-                      Generating methods, please wait...
-                    </p>
-                  )}
+                      <div className="form-group">
+                        <label>Technique</label>
+                        <select
+                          value={technique}
+                          onChange={(e) =>
+                            setTechnique(
+                              e.target.value as (typeof techniques)[number]
+                            )
+                          }
+                        >
+                          {techniques.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-                  {errorMessage && (
-                    <p style={{ color: "red", marginTop: "8px" }}>
-                      {errorMessage}
-                    </p>
-                  )}
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Scientist / analyst</label>
+                        <input
+                          type="text"
+                          value={scientistName}
+                          onChange={(e) => setScientistName(e.target.value)}
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Company / lab</label>
+                        <input
+                          type="text"
+                          value={company}
+                          onChange={(e) => setCompany(e.target.value)}
+                          placeholder="Organization"
+                        />
+                      </div>
+                    </div>
 
-                  {generateStatus && (
-                    <p className="text-xs text-slate-600 mt-2 text-center">
-                      {generateStatus}
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Work email</label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="name@lab-or-company.com"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Instrument / platform</label>
+                        <input
+                          type="text"
+                          value={instrument}
+                          onChange={(e) => setInstrument(e.target.value)}
+                          placeholder="e.g., Agilent 1260, Waters UPLC, Sciex LC‑MS"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Free usage info */}
+                    <p className="small-muted" style={{ marginTop: "0.5rem" }}>
+                      Trial uses this month: {used}/{freeLimit}
                     </p>
-                  )}
-                </form>
+
+                    {limitReached && (
+                      <p style={{ color: "red", marginTop: "4px", fontWeight: 500 }}>
+                        {limitMessage}
+                      </p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="primary-button"
+                      disabled={isLoading || limitReached}
+                    >
+                      {isLoading ? "Generating..." : "Generate AI method"}
+                    </button>
+
+                    {isLoading && (
+                      <p style={{ color: "#555", marginTop: "8px" }}>
+                        Generating methods, please wait...
+                      </p>
+                    )}
+
+                    {errorMessage && (
+                      <p style={{ color: "red", marginTop: "8px" }}>
+                        {errorMessage}
+                      </p>
+                    )}
+
+                    {generateStatus && (
+                      <p className="text-xs text-slate-600 mt-2 text-center">
+                        {generateStatus}
+                      </p>
+                    )}
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
-      {result && (
-        <>
-          {/* Result cards */}
-          <section style={{ marginTop: "1.5rem" }}>
-            <div className="result-grid">
-              {/* Card 1: Physico‑chemical summary */}
-              <div className="result-card">
-                <h3>Physico‑chemical summary</h3>
-                <p className="small-muted">
-                  Key AI‑generated notes about the molecule, matrix and chromatographic behavior.
-                </p>
-                <pre className="result-pre">
-                  {result.physicochemicalSummary ||
-                    "Physicochemical summary from AI will appear here."}
-                </pre>
-              </div>
+          </section>
+        </div>
 
-              {/* Card 2: Suggested LC method */}
-              <div className="result-card">
-                <h3>Suggested LC method</h3>
-                <p className="small-muted">
-                  AI‑proposed column, mobile phase, flow, detection and runtime as a starting point for your lab optimization.
-                </p>
-                <pre className="result-pre">
-                  {result.methodSummary ||
-                    `Column: ${result.method?.column || "N/A"}
+        {result && (
+          <>
+            {/* Result cards */}
+            <section style={{ marginTop: "1.5rem" }}>
+              <div className="result-grid">
+                {/* Card 1: Physico‑chemical summary */}
+                <div className="result-card">
+                  <h3>Physico‑chemical summary</h3>
+                  <p className="small-muted">
+                    Key AI‑generated notes about the molecule, matrix and chromatographic behavior.
+                  </p>
+                  <pre className="result-pre">
+                    {result.physicochemicalSummary ||
+                      "Physicochemical summary from AI will appear here."}
+                  </pre>
+                </div>
+
+                {/* Card 2: Suggested LC method */}
+                <div className="result-card">
+                  <h3>Suggested LC method</h3>
+                  <p className="small-muted">
+                    AI‑proposed column, mobile phase, flow, detection and runtime as a starting point for your lab optimization.
+                  </p>
+                  <pre className="result-pre">
+                    {result.methodSummary ||
+                      `Column: ${result.method?.column || "N/A"}
 Mobile phase: ${result.method?.mobilePhase || "N/A"}
 Flow rate: ${result.method?.flowRate || "N/A"}
 Detection: ${result.method?.detection || "N/A"}
 Runtime: ${result.method?.runtime || "N/A"}
 Column temperature: ${result.method?.temperature || "N/A"}
 Injection volume: ${(result.method as any)?.injectionVolume ||
-                    (result.method as any)?.injection_volume ||
-                    "N/A"
-                    }`}
-                </pre>
-              </div>
+                      (result.method as any)?.injection_volume ||
+                      "N/A"
+                      }`}
+                  </pre>
+                </div>
 
-              {/* Card 3: Literature (structured) */}
-              <div className="result-card">
-                <h3>Related literature</h3>
-                <p className="small-muted">
-                  AI‑suggested articles and prior methods related to this molecule and technique.
-                </p>
-                {Array.isArray(result.literature) && result.literature.length > 0 ? (
-                  <ul className="result-list">
-                    {result.literature.slice(0, 3).map((ref: any, idx: number) => (
-                      <li key={idx}>
-                        <strong>{ref.title || "Untitled"}</strong>
-                        {ref.journal ? ` — ${ref.journal}` : ""}
-                        {ref.year ? ` (${ref.year})` : ""}
-                        {ref.authors ? ` · ${ref.authors}` : ""}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
+                {/* Card 3: Related literature */}
+                <div className="result-card">
+                  <h3>Related literature</h3>
                   <p className="small-muted">
-                    No literature suggestions returned for this query.
+                    AI‑suggested articles and prior methods related to this molecule and technique.
                   </p>
-                )}
-              </div>
+                  {Array.isArray(result.literature) && result.literature.length > 0 ? (
+                    <ul className="result-list">
+                      {result.literature.slice(0, 3).map((ref: any, idx: number) => (
+                        <li key={idx}>
+                          <strong>{ref.title || "Untitled"}</strong>
+                          {ref.journal ? ` — ${ref.journal}` : ""}
+                          {ref.year ? ` (${ref.year})` : ""}
+                          {ref.authors ? ` · ${ref.authors}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="small-muted">
+                      No literature suggestions returned for this query.
+                    </p>
+                  )}
+                </div>
 
-              {/* Card 4: Physicochemical properties (structured) */}
-              <div className="result-card">
-                <h3>Physicochemical properties</h3>
-                <p className="small-muted">
-                  Key AI‑estimated properties for understanding chromatographic behavior.
-                </p>
-                {result.properties ? (
-                  <ul className="result-list">
-                    {(result.properties as any).chemical_name && (
-                      <li>
-                        Chemical name: {(result.properties as any).chemical_name}
-                      </li>
-                    )}
-                    {(result.properties as any).chemical_formula && (
-                      <li>
-                        Formula: {(result.properties as any).chemical_formula}
-                      </li>
-                    )}
-                    {(result.properties as any).molecular_weight && (
-                      <li>
-                        Molecular weight: {(result.properties as any).molecular_weight}
-                      </li>
-                    )}
-                    {(result.properties as any).pKa && (
-                      <li>pKa: {(result.properties as any).pKa}</li>
-                    )}
-                    {(result.properties as any).solubility && (
-                      <li>Solubility: {(result.properties as any).solubility}</li>
-                    )}
-                    {(result.properties as any).stability && (
-                      <li>Stability: {(result.properties as any).stability}</li>
-                    )}
-                  </ul>
-                ) : (
+                {/* Card 4: Physicochemical properties */}
+                <div className="result-card">
+                  <h3>Physicochemical properties</h3>
                   <p className="small-muted">
-                    No properties returned for this query.
+                    Key AI‑estimated properties for understanding chromatographic behavior.
                   </p>
-                )}
+                  {result.properties ? (
+                    <ul className="result-list">
+                      {(result.properties as any).chemical_name && (
+                        <li>
+                          Chemical name: {(result.properties as any).chemical_name}
+                        </li>
+                      )}
+                      {(result.properties as any).chemical_formula && (
+                        <li>
+                          Formula: {(result.properties as any).chemical_formula}
+                        </li>
+                      )}
+                      {(result.properties as any).molecular_weight && (
+                        <li>
+                          Molecular weight: {(result.properties as any).molecular_weight}
+                        </li>
+                      )}
+                      {(result.properties as any).pKa && (
+                        <li>pKa: {(result.properties as any).pKa}</li>
+                      )}
+                      {(result.properties as any).solubility && (
+                        <li>Solubility: {(result.properties as any).solubility}</li>
+                      )}
+                      {(result.properties as any).stability && (
+                        <li>Stability: {(result.properties as any).stability}</li>
+                      )}
+                    </ul>
+                  ) : (
+                    <p className="small-muted">
+                      No properties returned for this query.
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          </section>
-        </>
-      )}
+            </section>
+          </>
+        )}
 
-      {/* Certificate + payment + PDF button */}
-      <section style={{ marginTop: "1.5rem" }}>
-        <div className="certificate-card">
-          <label
-            className="small-muted"
-            style={{ display: "block", marginBottom: "0.5rem" }}
-          >
-            <input
-              type="checkbox"
-              checked={paymentConfirmed}
-              onChange={(e) => setPaymentConfirmed(e.target.checked)}
-              style={{ marginRight: "0.5rem" }}
-            />
-            I confirm that payment has been made.
-          </label>
+        {/* Certificate + payment + PDF button */}
+        <section style={{ marginTop: "1.5rem" }}>
+          <div className="certificate-card">
+            <label
+              className="small-muted"
+              style={{ display: "block", marginBottom: "0.5rem" }}
+            >
+              <input
+                type="checkbox"
+                checked={paymentConfirmed}
+                onChange={(e) => setPaymentConfirmed(e.target.checked)}
+                style={{ marginRight: "0.5rem" }}
+              />
+              I confirm that payment has been made.
+            </label>
 
-          <button
-            type="button"
-            onClick={handleDownloadPdf}
-            className="primary-button"
-            disabled={!paymentConfirmed || !certificate || isPdfGenerating}
-          >
-            {isPdfGenerating
-              ? "Preparing PDF..."
-              : "Download Method as PDF"}
-          </button>
-        </div>
-      </section>
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              className="primary-button"
+              disabled={!paymentConfirmed || !certificate || isPdfGenerating}
+            >
+              {isPdfGenerating
+                ? "Preparing PDF..."
+                : "Download Method as PDF"}
+            </button>
+          </div>
+        </section>
+
+        <p className="text-xs text-slate-500 text-center mt-8">
+          Backend status: {backendStatus}
+        </p>
+      </div>
     </>
-  )
-}
-
-<p className="text-xs text-slate-500 text-center mt-8">
-  Backend status: {backendStatus}
-</p>
-    </div >
   );
 }
 

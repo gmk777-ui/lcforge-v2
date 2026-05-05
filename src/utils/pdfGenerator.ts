@@ -23,14 +23,16 @@ export function generateMethodPdf(data: MethodCertificateData) {
 
   // Safely format the timestamp to avoid "Invalid Date"
   let dateStr: string;
-  if (typeof (data as any).timestamp === "number") {
-    dateStr = new Date((data as any).timestamp).toLocaleString();
-  } else if (typeof (data as any).timestamp === "string") {
-    const d = new Date((data as any).timestamp);
+  try {
+    const raw = (data as any).timestamp;
+    const d =
+      raw === undefined || raw === null
+        ? new Date()
+        : new Date(String(raw));
     dateStr = isNaN(d.getTime())
       ? new Date().toLocaleString()
       : d.toLocaleString();
-  } else {
+  } catch {
     dateStr = new Date().toLocaleString();
   }
 

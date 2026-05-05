@@ -334,13 +334,17 @@ function Home() {
         company: company || "Company",
         instrument: instrument || "Instrument",
         methodId: certificate.methodId,
-        timestamp: String(certificate.timestamp),
+        // keep timestamp as number, not String()
+        timestamp: certificate.timestamp,
         fingerprint: certificate.fingerprint,
         column: result.method?.column || "",
         mobilePhase: result.method?.mobilePhase || "",
         flowRate: result.method?.flowRate || "",
         detection: result.method?.detection || "",
         runtime: result.method?.runtime || "",
+        // new fields
+        literature: result.literature || [],
+        properties: result.properties || {},
       });
 
       // Track successful PDF generation

@@ -7,33 +7,50 @@ export interface MethodCertificateData {
   company: string;
   instrument: string;
   methodId: string;
-  timestamp: string;
+  timestamp: string | number | undefined;
   fingerprint: string;
   column: string;
   mobilePhase: string;
   flowRate: string;
   detection: string;
   runtime: string;
+  literature: any[];
+  properties: Record<string, any>;
 }
 
 export function generateMethodPdf(data: MethodCertificateData) {
   const doc = new jsPDF("p", "mm", "a4");
 
+  // Safely format the timestamp to avoid "Invalid Date"
+  let dateStr: string;
+  if (typeof (data as any).timestamp === "number") {
+    dateStr = new Date((data as any).timestamp).toLocaleString();
+  } else if (typeof (data as any).timestamp === "string") {
+    const d = new Date((data as any).timestamp);
+    dateStr = isNaN(d.getTime())
+      ? new Date().toLocaleString()
+      : d.toLocaleString();
+  } else {
+    dateStr = new Date().toLocaleString();
+  }
+
   const marginLeft = 15;
   let y = 15;
 
+  // Header
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.text("LCForge AI – Chromatography Method Certificate", marginLeft, y);
 
   y += 8;
-  doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
   doc.text(`Method ID: ${data.methodId}`, marginLeft, y);
   y += 5;
-  doc.text(`Generated on: ${new Date(data.timestamp).toLocaleString()}`, marginLeft, y);
+  doc.text(`Generated on: ${dateStr}`, marginLeft, y);
   y += 8;
 
+  // Generated for
   doc.setFont("helvetica", "bold");
   doc.text("Generated For", marginLeft, y);
   y += 5;
@@ -47,6 +64,7 @@ export function generateMethodPdf(data: MethodCertificateData) {
   doc.text(`Instrument: ${data.instrument || "N/A"}`, marginLeft, y);
   y += 8;
 
+  // Method summary
   doc.setFont("helvetica", "bold");
   doc.text("Method Summary", marginLeft, y);
   y += 5;
@@ -64,10 +82,85 @@ export function generateMethodPdf(data: MethodCertificateData) {
   doc.text(`Run time: ${data.runtime}`, marginLeft, y);
   y += 8;
 
+  // --- Physicochemical properties section ---
   doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Physicochemical properties", marginLeft, y);
+  y += 6;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  const props = (data as any).properties || {};
+
+  if (props.chemical_name) {
+    doc.text(`Chemical name: ${props.chemical_name}`, marginLeft, y);
+    y += 5;
+  }
+  if (props.chemical_formula) {
+    doc.text(`Formula: ${props.chemical_formula}`, marginLeft, y);
+    y += 5;
+  }
+  if (props.molecular_weight) {
+    doc.text(
+      `Molecular weight: ${props.molecular_weight}`,
+      marginLeft,
+      y
+    );
+    y += 5;
+  }
+  if (props.pKa) {
+    doc.text(`pKa: ${props.pKa}`, marginLeft, y);
+    y += 5;
+  }
+  if (props.solubility) {
+    doc.text(`Solubility: ${props.solubility}`, marginLeft, y);
+    y += 5;
+  }
+  if (props.stability) {
+    doc.text(`Stability: ${props.stability}`, marginLeft, y);
+    y += 5;
+  }
+
+  // --- Literature section ---
+  y += 6;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Related literature", marginLeft, y);
+  y += 6;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  const lit = (data as any).literature || [];
+
+  if (Array.isArray(lit) && lit.length > 0) {
+    lit.slice(0, 3).forEach((ref: any, idx: number) => {
+      const title = ref.title || "Untitled";
+      const journal = ref.journal ? ` — ${ref.journal}` : "";
+      const year = ref.year ? ` (${ref.year})` : "";
+      const authors = ref.authors ? ` · ${ref.authors}` : "";
+      const line = `${idx + 1}. ${title}${journal}${year}${authors}`;
+
+      const lines = doc.splitTextToSize(line, 180 - marginLeft);
+      doc.text(lines, marginLeft, y);
+      y += lines.length * 5;
+    });
+  } else {
+    doc.text(
+      "No literature suggestions available for this query.",
+      marginLeft,
+      y
+    );
+    y += 5;
+  }
+
+  // Confidentiality & Fingerprint
+  y += 8;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
   doc.text("Confidentiality & Fingerprint", marginLeft, y);
   y += 5;
   doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
   const noticeLines = doc.splitTextToSize(
     "This chromatographic method is generated exclusively for the above user by LCForge AI. This method is confidential and reserved for the requesting organization.",
     180

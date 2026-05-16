@@ -222,7 +222,7 @@ function Home() {
                 return m.mobilePhase;
               }
 
-              // 2) If model gave a snake_case string (current live AI case)
+              // 2) If model gave a snake_case string
               if (typeof m.mobile_phase === "string") {
                 return m.mobile_phase;
               }
@@ -233,8 +233,9 @@ function Home() {
                 return "";
               }
 
-              const solventA = mp.solvent_A || "";
-              const solventB = mp.solvent_B || "";
+              // Support both older keys (solvent_A / solvent_B) and new keys (component_A / component_B)
+              const solventA = mp.solvent_A || mp.component_A || "";
+              const solventB = mp.solvent_B || mp.component_B || "";
               const ratio = mp.ratio || "";
               const gradient = mp.gradient || "";
 

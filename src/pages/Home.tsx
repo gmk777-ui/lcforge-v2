@@ -196,9 +196,10 @@ function Home() {
         // Normalize method field names, flatten nested objects, and add sensible defaults
         const normalizedMethod = raw.method
           ? {
+            // Keep everything that comes from the model
             ...raw.method,
 
-            // Flatten column object if present
+            // Column: flatten object or keep string
             column:
               typeof raw.method.column === "string"
                 ? raw.method.column
@@ -212,24 +213,31 @@ function Home() {
                     .join(", ")
                   : "",
 
-            // Mobile phase summary and gradient
+            // Mobile phase: handle camelCase, snake_case string, or structured object
             mobilePhase: (() => {
-              // If model already gave a plain string, use it
-              if (typeof raw.method.mobilePhase === "string") {
-                return raw.method.mobilePhase;
+              const m = raw.method as any;
+
+              // 1) If model already gave a camelCase string
+              if (typeof m.mobilePhase === "string") {
+                return m.mobilePhase;
               }
 
-              const mp = raw.method.mobile_phase;
+              // 2) If model gave a snake_case string (current live AI case)
+              if (typeof m.mobile_phase === "string") {
+                return m.mobile_phase;
+              }
+
+              // 3) Structured mobile_phase object
+              const mp = m.mobile_phase;
               if (!mp || typeof mp !== "object") {
                 return "";
               }
 
               const solventA = mp.solvent_A || "";
               const solventB = mp.solvent_B || "";
-              const ratio = mp.ratio || ""; // optional if model ever returns it
+              const ratio = mp.ratio || "";
               const gradient = mp.gradient || "";
 
-              // First line: simple solvent summary, optionally with ratio
               const base =
                 ratio && solventA && solventB
                   ? `${solventA} / ${solventB} (${ratio})`
@@ -237,43 +245,65 @@ function Home() {
                     ? `${solventA} / ${solventB}`
                     : solventA || solventB || "";
 
-              // If gradient text exists, append it
               if (gradient) {
                 return `${base} (${gradient})`;
               }
               return base;
             })(),
 
-            flowRate: raw.method.flowRate || raw.method.flow_rate || "",
+            // Flow rate: camelCase or snake_case
+            flowRate:
+              (raw.method as any).flowRate ??
+              (raw.method as any).flow_rate ??
+              "",
 
-            runtime: raw.method.runtime || raw.method.run_time || "",
+            // Detection: flatten object and map detection_wavelength -> detection
+            detection: (() => {
+              const m = raw.method as any;
 
-            // Temperature with default 27°C if missing
-            temperature:
-              raw.method.temperature ||
-              raw.method.column_temperature ||
-              "27°C",
+              // If already a simple string, use it
+              if (typeof m.detection === "string") {
+                return m.detection;
+              }
 
-            // Injection volume with default 20 µL if missing
-            injectionVolume:
-              raw.method.injectionVolume ||
-              raw.method.injection_volume ||
-              "20 µL",
+              // If the model gave detection_wavelength, convert to a friendly string
+              if (m.detection_wavelength) {
+                // you can adjust wording here if you want
+                return `UV at ${m.detection_wavelength}`;
+              }
 
-            // Flatten detection object if present
-            detection:
-              typeof raw.method.detection === "string"
-                ? raw.method.detection
-                : raw.method.detection
-                  ? [
-                    raw.method.detection.type,
-                    raw.method.detection.wavelength
-                      ? `at ${raw.method.detection.wavelength}`
-                      : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")
-                  : "",
+              // If detection is an object, flatten it
+              if (m.detection && typeof m.detection === "object") {
+                const technique = m.detection.technique || "";
+                const wavelength = m.detection.wavelength || "";
+                if (technique && wavelength) {
+                  return `${technique} at ${wavelength}`;
+                }
+                return technique || wavelength || "";
+              }
+
+              return "";
+            })(),
+
+            // Runtime: camelCase or snake_case
+            runtime:
+              (raw.method as any).runtime ??
+              (raw.method as any).run_time ??
+              "",
+
+            // Temperature: map column_temperature -> temperature, with default 27 °C
+            temperature: (() => {
+              const m = raw.method as any;
+              const t = m.temperature ?? m.column_temperature;
+              return t && String(t).trim() !== "" ? t : "27°C";
+            })(),
+
+            // Injection volume: camelCase or snake_case, with default 20 µL
+            injectionVolume: (() => {
+              const m = raw.method as any;
+              const v = m.injectionVolume ?? m.injection_volume;
+              return v && String(v).trim() !== "" ? v : "20 µL";
+            })(),
           }
           : null;
 

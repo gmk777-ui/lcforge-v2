@@ -56,7 +56,63 @@ interface Certificate {
   timestamp: number;
   fingerprint: string;
 }
+function formatMethodFromRaw(raw: any): string {
+  if (!raw || typeof raw !== "object") return "No method details returned.";
 
+  const lines: string[] = [];
+
+  const push = (label: string, value: any) => {
+    if (value === undefined || value === null) return;
+    const v = typeof value === "object" ? JSON.stringify(value) : String(value);
+    if (!v.trim()) return;
+    lines.push(`${label}: ${v}`);
+  };
+
+  // Try some common keys, but don't break if missing
+  push("Technique", raw.technique);
+  push("Column", raw.column);
+  push("Mobile phase", raw.mobilePhase ?? raw.mobile_phase);
+  push("Flow rate", raw.flowRate ?? raw.flow_rate);
+  push("Detection", raw.detection ?? raw.detection_wavelength);
+  push("Run time", raw.runtime ?? raw.run_time);
+  push("Temperature", raw.temperature ?? raw.column_temperature);
+  push("Injection volume", raw.injectionVolume ?? raw.injection_volume);
+
+  // Include any other keys that exist, without guessing names
+  Object.keys(raw).forEach((key) => {
+    if (
+      [
+        "technique",
+        "column",
+        "mobilePhase",
+        "mobile_phase",
+        "flowRate",
+        "flow_rate",
+        "detection",
+        "detection_wavelength",
+        "runtime",
+        "run_time",
+        "temperature",
+        "column_temperature",
+        "injectionVolume",
+        "injection_volume",
+      ].includes(key)
+    ) {
+      return;
+    }
+    const value = (raw as any)[key];
+    if (value === undefined || value === null) return;
+    const v = typeof value === "object" ? JSON.stringify(value) : String(value);
+    if (!v.trim()) return;
+    lines.push(`${key}: ${v}`);
+  });
+
+  if (lines.length === 0) {
+    return "Method details returned, but no recognizable fields to display.";
+  }
+
+  return lines.join("\n");
+}
 function Home() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://lcforge-v2.onrender.com";
 
@@ -582,17 +638,11 @@ function Home() {
                     AI‑proposed column, mobile phase, flow, detection and runtime as a starting point for your lab optimization.
                   </p>
                   <pre className="result-pre">
-                    {result.methodSummary ||
-                      `Column: ${result.method?.column || "N/A"}
-Mobile phase: ${result.method?.mobilePhase || "N/A"}
-Flow rate: ${result.method?.flowRate || "N/A"}
-Detection: ${result.method?.detection || "N/A"}
-Runtime: ${result.method?.runtime || "N/A"}
-Column temperature: ${result.method?.temperature || "N/A"}
-Injection volume: ${(result.method as any)?.injectionVolume ||
-                      (result.method as any)?.injection_volume ||
-                      "N/A"
-                      }`}
+                    {result.methodSummary
+                      ? result.methodSummary
+                      : result.method
+                        ? formatMethodFromRaw(result.method)
+                        : "No method details returned from AI."}
                   </pre>
                 </div>
 

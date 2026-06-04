@@ -12,6 +12,8 @@ export default function PricingPage() {
   const [email, setEmail] = useState("");
   const [checkoutStatus, setCheckoutStatus] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const razorpayKeyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
+  console.log("Using Razorpay key (frontend):", razorpayKeyId);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const checkoutParam = params.get("checkout");
@@ -33,21 +35,111 @@ export default function PricingPage() {
 
       if (!email) {
         setCheckoutStatus(
-          "Please enter your email to start the Solo subscription in Stripe test mode."
+          "Please enter your email before starting payment."
         );
         setIsCheckingOut(false);
         return;
       }
 
-      const session = await createSoloCheckoutSession(email);
+      // 1) Create Razorpay order on backend
+      console.log("Calling create-order at:", `${backendUrl}/api/razorpay/create-order`);
 
-      // Redirect to Stripe Checkout
-      window.location.href = session.url;
-    } catch (err: any) {
+      const res = await fetch(`${backendUrl}/api/razorpay/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountInInr: 3399 }),
+      }).catch((err) => {
+        console.error("Fetch error to create-order:", err);
+        throw err;
+      });
+
+      console.log("create-order response status:", res.status);
+
+      let data: any = null;
+      try {
+        data = await res.json();
+        console.log("create-order JSON:", data);
+        console.log("create-order meta:", data.meta);
+      } catch (e) {
+        console.error("Failed to parse JSON from create-order:", e);
+      }
+
+      if (!res.ok) {
+        console.error("create-order not ok:", data);
+        setCheckoutStatus("Could not start payment. Please try again.");
+        setIsCheckingOut(false);
+        return;
+      }
+
+      const { orderId, amount, currency } = data.result || data;
+
+      // 2) Load Razorpay script if needed
+      if (!(window as any).Razorpay) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => resolve();
+          script.onerror = () =>
+            reject(new Error("Failed to load Razorpay checkout script"));
+          document.body.appendChild(script);
+        });
+      }
+
+      // 3) Configure and open Razorpay Checkout
+      const options = {
+        key: razorpayKeyId,
+        amount,
+        currency,
+        name: "LCForge AI",
+        description: "LCForge Solo subscription",
+        order_id: orderId,
+        prefill: {
+          name: "LCForge User",
+          email,
+        },
+        handler: async function (response: any) {
+          const verifyRes = await fetch(
+            `${backendUrl}/api/razorpay/verify`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            }
+          );
+
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok && (verifyData.result?.success || verifyData.success)) {
+            setCheckoutStatus("Payment successful. Thank you!");
+            // later: you can persist a flag here
+          } else {
+            setCheckoutStatus(
+              "Payment verification failed. Please contact support."
+            );
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setCheckoutStatus("Payment was cancelled.");
+          },
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+      if ((window as any).plausible) {
+        (window as any).plausible("ClickUpgrade");
+      }
+    } catch (err) {
       console.error(err);
-      setCheckoutStatus(
-        "We couldn’t start the checkout session. Please try again in a moment."
-      );
+      setCheckoutStatus("Unexpected error. Please try again.");
     } finally {
       setIsCheckingOut(false);
     }
@@ -66,7 +158,7 @@ export default function PricingPage() {
           <h2>Free trial usage</h2>
           <p className="price">$0</p>
           <ul>
-            <li>Up to 3 AI‑generated LC/HPLC/LC‑MS methods per month</li>
+            <li>Up to 2 AI‑generated LC/HPLC/LC‑MS methods per month</li>
             <li>Full method view and method PDF certificates with fingerprints</li>
             <li>No card required during the free trial</li>
             <li>Best for evaluating LCForge in real method‑development scenarios</li>
@@ -78,9 +170,9 @@ export default function PricingPage() {
         <div className="pricing-card pricing-card-accent">
           <h2>LCForge Solo</h2>
           <p className="price">
-            $49<span>/ month</span>
+            $36<span>/ month</span>
           </p>
-          <p className="price-note">Approx. ₹4,000 per month (for reference)</p>
+          <p className="price-note">Approx. ₹3,399 per month (for reference)</p>
           <ul>
             <li>Up to 200 AI‑generated LC/HPLC/LC‑MS methods per month</li>
             <li>Unlimited method PDF certificates with unique LCForge fingerprints</li>
@@ -100,7 +192,7 @@ export default function PricingPage() {
             className="primary-button"
             disabled={isCheckingOut}
           >
-            {isCheckingOut ? "Redirecting to Stripe..." : "Start Solo (Stripe test mode)"}
+            {isCheckingOut ? "Opening Razorpay..." : "Start Solo (Razorpay – UPI & cards)"}
           </button>
 
           {checkoutStatus && (

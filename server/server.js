@@ -7,6 +7,8 @@ import cors from "cors";
 import OpenAI from "openai";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
+import Razorpay from "razorpay";
+import crypto from "crypto";
 
 import { config } from "./config.js";
 import { ok, fail } from "./responseHelpers.js";
@@ -52,9 +54,25 @@ const openai =
     apiKey: config.openaiApiKey,
   });
 
+// Razorpay client
+const razorpay =
+  process.env.RAZORPAY_KEY_ID &&
+  process.env.RAZORPAY_KEY_SECRET &&
+  new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+console.log("Razorpay keys present:", !!process.env.RAZORPAY_KEY_ID, !!process.env.RAZORPAY_KEY_SECRET);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+console.log("Raw RAZORPAY_KEY_ID:", JSON.stringify(process.env.RAZORPAY_KEY_ID));
+console.log("Raw RAZORPAY_KEY_SECRET:", JSON.stringify(process.env.RAZORPAY_KEY_SECRET));
+console.log(
+  "Razorpay keys present:",
+  !!process.env.RAZORPAY_KEY_ID,
+  !!process.env.RAZORPAY_KEY_SECRET
+);
 // CORS: allow lcforgeai.online and local dev
 const allowedOrigins = [
   "https://lcforgeai.online",
@@ -286,6 +304,79 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
+// ====== Razorpay order + verify routes ======
+app.post("/api/razorpay/create-order", async (req, res) => {
+  try {
+    if (!razorpay) {
+      return fail(res, "Razorpay is not configured", { code: "NO_RAZORPAY" }, 500);
+    }
+
+    const { amountInInr } = req.body || {};
+
+    if (!amountInInr || amountInInr < 1) {
+      return fail(res, "Invalid amount", { code: "BAD_AMOUNT" }, 400);
+    }
+
+    const options = {
+      amount: amountInInr * 100, // paise
+      currency: "INR",
+      receipt: "lcforge_" + Date.now(),
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    return ok(
+      res,
+      {
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+      },
+      { provider: "razorpay" }
+    );
+  } catch (err) {
+    console.error("Razorpay create-order error", err);
+    return fail(res, "Failed to create Razorpay order", {
+      code: "RAZORPAY_ORDER_ERROR",
+      detail: err.message,
+    });
+  }
+});
+
+app.post("/api/razorpay/verify", (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body || {};
+
+    if (
+      !razorpay_order_id ||
+      !razorpay_payment_id ||
+      !razorpay_signature
+    ) {
+      return fail(res, "Missing Razorpay fields", { code: "MISSING_FIELDS" }, 400);
+    }
+
+    const secret = process.env.RAZORPAY_KEY_SECRET || "";
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(body)
+      .digest("hex");
+
+    if (expectedSignature === razorpay_signature) {
+      return ok(res, { success: true }, { provider: "razorpay" });
+    } else {
+      return fail(res, "Signature mismatch", { code: "BAD_SIGNATURE" }, 400);
+    }
+  } catch (err) {
+    console.error("Razorpay verify error", err);
+    return fail(res, "Error verifying Razorpay payment", {
+      code: "RAZORPAY_VERIFY_ERROR",
+      detail: err.message,
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(
     `LCForge Server running on port ${PORT} - AI integrated - mode=${config.mode}, env=${config.env}`

@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
-console.log("Using .env from:", process.cwd() + "/.env");
+dotenv.config({ path: "./server/.env" });
+console.log("Using .env from:", process.cwd() + "/server/.env");
 
 import express from "express";
 import cors from "cors";
@@ -12,6 +12,7 @@ import crypto from "crypto";
 
 import { config } from "./config.js";
 import { ok, fail } from "./responseHelpers.js";
+const cors = require("cors");
 
 console.log("CONFIG Stripe:", {
   secretFromConfig: config.stripeSecretKey ? "set" : "empty",
@@ -75,8 +76,9 @@ console.log(
 );
 // CORS: allow lcforgeai.online and local dev
 const allowedOrigins = [
-  "https://lcforgeai.online",
-  "http://localhost:5173",
+  "https://lcforgeai.online",              // your custom domain, if used
+  "https://lcforge-frontend.onrender.com", // Render static frontend
+  "http://localhost:5173",                 // local dev
 ];
 
 app.use(

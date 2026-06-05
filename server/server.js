@@ -12,7 +12,6 @@ import crypto from "crypto";
 
 import { config } from "./config.js";
 import { ok, fail } from "./responseHelpers.js";
-const cors = require("cors");
 
 console.log("CONFIG Stripe:", {
   secretFromConfig: config.stripeSecretKey ? "set" : "empty",
